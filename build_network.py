@@ -4,6 +4,7 @@ import time
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+import os
 
 def fetch_openalex_data(filter_id, filter_type="topic", max_papers=100):
     base_url = "https://api.openalex.org/works"
@@ -152,4 +153,6 @@ for topic_name, topic_id in topics.items():
     print(f"Total edges collected: {len(evolution_df)}")
     print(evolution_df.head())
     #save to csv for later use
+    if not os.path.exists("data"):
+        os.makedirs("data")
     evolution_df.to_csv(f"data/{topic_name.replace(' ', '_')}_2010_2025.csv", index=False)

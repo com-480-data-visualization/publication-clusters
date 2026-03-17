@@ -63,10 +63,12 @@ def generate_yearly_snapshots(df, topic_name):
         ax.axis('off')
 
     plt.tight_layout()
-    fig.savefig(f"evolution_{topic_name.replace(' ', '_')}_2010_2025.png", dpi=300)
+    if not os.path.exists("figures"):
+        os.makedirs("figures")
+    fig.savefig(f"figures/evolution_{topic_name.replace(' ', '_')}_2010_2025.png", dpi=300)
 
 for data in os.listdir("data"):
-    topic_name = data.split("2")[0].replace("_", " ")
+    topic_name = data.split("2")[0][:-1].replace("_", " ")
     print(f"Generating snapshots for topic: {topic_name}")
     evolution_df = pd.read_csv(f"data/{data}")
     print(f"Total edges collected: {len(evolution_df)}")
