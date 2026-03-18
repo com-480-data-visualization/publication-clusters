@@ -1,6 +1,15 @@
 # publication-clusters
 Melika Honarmand, Aude Maier, Edgar Desnos, Alexandre Carel
 
+## Dataset
+
+The primary dataset used in this project consists of scientific publications and their associated metadata retrieved from the OpenAlex API. It comprises over 480 million records and includes numerous features such as publication date, country of origin, authorship information, and citation links to other papers.
+
+In terms of quality, the dataset is generally high, as it is derived from curated scholarly sources. While minor inconsistencies or missing values may exist, it is overall considered reliable and well-suited for the objectives of this project.
+
+Several preprocessing steps were applied to prepare the data for analysis. These include data filtering based on topic and publication year, feature selection to retain only relevant variables, sampling to limit dataset size, and normalization through fractional weighting of relationships. Additionally, basic data cleaning was performed to handle missing or incomplete metadata. These steps ensure improved computational performance, consistency, and compatibility with subsequent modeling approaches.
+
+A complementary dataset from the OpenStreetMap API is also incorporated. This dataset contains billions of geospatial entries, including coordinates, country information, and feature classifications. It is used to enrich the primary dataset through data augmentation, enabling more comprehensive spatial analysis.
 
 ## Problematic
 
