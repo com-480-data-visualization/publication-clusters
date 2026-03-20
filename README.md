@@ -1,5 +1,11 @@
 # publication-clusters
-Melika Honarmand, Aude Maier, Edgar Desnos, Alexandre Carel
+| Student's name | SCIPER |
+| -------------- | ------ |
+| Melika Honarmand | 357204 |
+| Aude Maier | 300671 |
+| Edgar Desnos | 388960 |
+| Alexandre Carel | 310350 |
+
 
 ## Dataset
 
