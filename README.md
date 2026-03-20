@@ -57,3 +57,10 @@ For this exploratory analysis, we selected two domains that demonstrate fundamen
 ---
 
 The geographic networks of research institutions and the above figures were generated using `main.py`.
+
+## Remark
+Two of our team members are also working on a project for the “Computational Social Media” course that uses OpenAlex to study paper citations. While both projects have a similar topic, they have very different approaches, objectives, and actual datasets.
+
+For this course, we are building networks of **research institutions** over the years in several domains, focusing on how connectivity changes over time in specific fields. We want to see how scientific bubbles grow, connect and shift year-by-year.
+
+In contrast, the other project builds a single, up-to-date network of **researchers** to perform social network analysis, such as detecting communities, measuring network connectivity, and evaluating node centrality.
