@@ -29,3 +29,27 @@ The primary motivation is to move beyond static data to identify the **gravitati
 
 ### Target Audience
 This tool is intended for **bibliometric researchers, university strategists, and policy makers** who require a macro-level view of international research trends to inform funding, collaboration strategies, and geopolitical analysis of scientific output.
+
+
+## Exploratory Data Analysis & Pre-processing
+
+### The Approach
+Our analysis uses the OpenAlex database to build a geographic network of research institutions for specific years. In these networks, nodes represent the universities or labs, and edges represent a citation link between them. To keep the data focused and reduce map clutter, we only draw edges between the institutions of the first authors of the papers. This allows us to map the primary "Lead Lab" responsible for the research. 
+
+Our pre-processing pipeline followed three main steps:
+
+1. **Topic Selection**: We fetch a fixed number of the top-cited papers per year for a specific topic. This ensures we are looking at the most influential work in the field and capturing the "core" of the scientific conversation.
+2. **Coordinate Lookup**: Because many database entries are missing GPS data, we used OpenStreetMap (Nominatim) to manually map university names to their exact Latitude and Longitude. This step was crucial for ensuring every "Lead Lab" was accurately placed on the world map.
+3. **Network Construction**: We build a "closed" graph for every year. This means we only visualize connections between the institutions that appear within our specific search results. This approach highlights the internal density of a field and shows how it becomes more or less "self-contained" over time.
+
+---
+
+### Domain Evolution: Case Studies
+
+For this exploratory analysis, we selected two domains that demonstrate fundamentally different geographic behaviors: **Solar Cell Manufacturing** and **High-Energy Physics (LHC)**.
+
+* **Solar Cells**: Shows a massive geographic shift. Research started in the US, Europe and Australia but became very China-centered in the last decade as the manufacturing industry migrated.
+![Solar Cells Evolution](figures/geospatial_evolution_SolarCells_2005_2025.png)
+
+* **LHC**: Shows a fixed "anchor" model. Because the physical collider is in Switzerland, the network always contains a cluster in Europe, whereas the other hubs vary over time.
+![LHC Evolution](figures/geospatial_evolution_LHC_2005_2014.png)
