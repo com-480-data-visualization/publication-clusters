@@ -58,6 +58,18 @@ For this exploratory analysis, we selected two domains that demonstrate fundamen
 
 The geographic networks of research institutions and the above figures were generated using `main.py`.
 
+## Related Work
+
+There has been prior work on visualizing scientific publications and citation networks. [Haunschild and Bornmann (2024)](https://doi.org/10.1371/journal.pone.0308041) used OpenAlex to build global overlay maps of science  constructed with [VOSviewer](https://www.vosviewer.com/), a widely used bibliometric network visualization tool. The [Local Citation Network app](https://localcitationnetwork.github.io/) similarly lets users explore citation graphs from OpenAlex. However, these tools focus on thematic positioning or citation graph exploration rather than geographic citation flows.
+
+[Pan, Kaski, and Fortunato (2012)](https://www.nature.com/articles/srep00902) studied citation and collaboration networks between cities and countries showing that citation flows follow gravity-like patterns where geographical closeness affects how often they cite each other. This is very relevant to our project but their few visualizations are static and don't support interactivity or filtering.
+
+Several tools also map citations geographically. [Citation Map](https://citationmap.com/) is an open-source tool built on OpenAlex that visualizes where a researcher's citations come from on a world map. [CitationMap](https://github.com/ChenLiu-1996/CitationMap) does something similar using Google Scholar data. While useful, these do not combine topic-level filtering with a time-based animated map showing directional flows and geographic clustering.
+
+Our primary inspiration comes from flow visualizations outside academia. [The circular migration flow visualization](http://www.global-migration.info/) by Sander, Abel, and Bauer and [peoplemovin](https://peoplemov.in/) both use interactive diagrams to show global human migration patterns. For geographic map-based flows specifically, similar to what we would like to achieve, [FlowmapBlue](https://www.flowmap.blue/) renders origin-destination data as animated arcs overlaid on a real-world map. We apply this same idea of directional flows on a real map to the spread of scientific ideas rather than people.
+
+
+
 ## Remark
 Two of our team members are also working on a project for the “Computational Social Media” course that uses OpenAlex to study paper citations. While both projects have a similar topic, they have very different approaches, objectives, and actual datasets.
 
