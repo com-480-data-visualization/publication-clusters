@@ -3,7 +3,8 @@ from preliminary_visualization import generate_geospatial_evolution
 import pandas as pd
 import os
 
-TOPIC_ID = "T10411" # Deep Learning example
+#Topic_ids: T10411 = Solar Cells, T10237 = LHC
+TOPIC_ID = "T10411"
 TOPIC_NAME = "SolarCells"
 START_YEAR, END_YEAR = 2000, 2025
 

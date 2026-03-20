@@ -53,3 +53,7 @@ For this exploratory analysis, we selected two domains that demonstrate fundamen
 
 * **LHC**: Shows a fixed "anchor" model. Because the physical collider is in Switzerland, the network always contains a cluster in Europe, whereas the other hubs vary over time.
 ![LHC Evolution](figures/geospatial_evolution_LHC_2005_2014.png)
+
+---
+
+The geographic networks of research institutions and the above figures were generated using `main.py`.
