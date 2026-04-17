@@ -55,8 +55,8 @@ function loadCSV(path, key) {
 }
 
 Promise.all([
-    loadCSV("./data/institution_network_evolution_LHC_2000_2025.csv", "A"),
-    loadCSV("./data/institution_network_evolution_SolarCells_2000_2025.csv", "B")
+    loadCSV("../data/institution_network_evolution_LHC_2000_2025.csv", "A"),
+    loadCSV("../data/institution_network_evolution_SolarCells_2000_2025.csv", "B")
 ]).then(() => {
     buildGraphCacheForDataset("A");
     buildGraphCacheForDataset("B");
