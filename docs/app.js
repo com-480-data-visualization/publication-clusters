@@ -61,6 +61,8 @@ Promise.all([
     buildGraphCacheForDataset("A");
     buildGraphCacheForDataset("B");
     initUI();
+}).catch(err => {
+    console.error("Startup failed:", err);
 });
 
 // --------------------------------------------------
