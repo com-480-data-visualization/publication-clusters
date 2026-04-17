@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cesium Globe</title>
+
+    <link
+      href="https://cesium.com/downloads/cesiumjs/releases/1.140/Build/Cesium/Widgets/widgets.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      html,
+      body,
+      #cesiumContainer {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      #toolbar {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 100;
+        background: rgba(42, 42, 42, 0.85);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        font-family: sans-serif;
+      }
+
+      #yearSlider {
+        width: 220px;
+      }
+
+      #yearValue {
+        font-weight: bold;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="toolbar">
+      <div>
+        <label>Dataset:</label>
+        <select id="datasetSelect">
+          <option value="A">LHC</option>
+          <option value="B">Solar Cells</option>
+        </select>
+      </div>
+
+      <div style="margin-top: 8px">
+        <label>Year:</label>
+        <input type="range" id="yearSlider" />
+        <span id="yearValue"></span>
+      </div>
+    </div>
+
+    <div id="cesiumContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.140/Build/Cesium/Cesium.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
