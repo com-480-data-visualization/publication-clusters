@@ -1,7 +1,8 @@
 import requests
 import pandas as pd
 import time
-
+from collections import Counter, defaultdict
+from tqdm import tqdm
 
 def fetch_openalex_data(api_filter, max_papers=100):
     base_url = "https://api.openalex.org/works"
@@ -36,13 +37,10 @@ def fetch_openalex_data(api_filter, max_papers=100):
             break
 
         time.sleep(0.1)
-
+    
     return papers[:max_papers]
 
 
-import time
-import pandas as pd
-from geopy.geocoders import Nominatim
 
 
 def build_institution_geo_dict(papers_data):
@@ -59,12 +57,13 @@ def build_institution_geo_dict(papers_data):
 
         lead_author = authorships[0]
         for inst in lead_author.get("institutions", []):
-            inst_id = inst.get("id")
+            inst_id = inst.get("id").split('/')[-1]
             if inst_id and inst_id not in unique_insts:
                 unique_insts[inst_id] = {
                     "name": inst.get("display_name"),
                     "country": inst.get("country_code", ""),
-                    "coords": None,
+                    "lat": None,
+                    "lng": None,
                 }
 
     print(f"Fetching geo data from OpenAlex for {len(unique_insts)} institutions...")
@@ -92,7 +91,8 @@ def build_institution_geo_dict(papers_data):
                     latitude = geo.get("latitude")
                     longitude = geo.get("longitude")
                     if latitude is not None and longitude is not None:
-                        unique_insts[item["id"]]["coords"] = (latitude, longitude)
+                        unique_insts[item["id"].split('/')[-1]]["lat"] = latitude
+                        unique_insts[item["id"].split('/')[-1]]["lng"] = longitude
         except Exception as e:
             print(f"OpenAlex batch error: {e}")
 
@@ -101,69 +101,165 @@ def build_institution_geo_dict(papers_data):
 
     return unique_insts
 
+def fetch_missing_referenced_papers(referenced_ids):
+    """Fetches authorship/institution data for papers cited but not in original set."""
+    if not referenced_ids:
+        return []
+        
+    base_url = "https://api.openalex.org/works"
+    extra_papers = []
+    
+    # Strip any URL prefixes to keep the filter payload small
+    clean_ids = [rid.replace("https://openalex.org/", "") for rid in referenced_ids]
+    
+    # OPTIMIZATION 1: Max out batch size to 100
+    batch_size = 100 
+    
+    print(f"Fetching authorship profiles in optimized batches of 100...", len(clean_ids))
+    
+    for i in tqdm(range(0, len(clean_ids), batch_size)):
+        batch = clean_ids[i : i + batch_size]
+        ids_filter = "|".join(batch)
+        
+        try:
+            response = requests.get(
+                base_url,
+                params={
+                    "filter": f"openalex:{ids_filter}",
+                    # OPTIMIZATION 2: Only fetch the bare minimum needed for your loop
+                    "select": "id,authorships,publication_year", 
+                    "per_page": 100,
+                    "mailto": "dedau1691@gmail.com",
+                }
+            )
+            if response.status_code == 200:
+                extra_papers.extend(response.json().get("results", []))
+            else:
+                print(f"Batch warning: Status {response.status_code}")
+        except Exception as e:
+            print(f"Network error in batch: {e}")
+            
+        time.sleep(0.1)
+
+    return extra_papers
+    
 
 def build_edges_with_geo_dict(papers_data, geo_dict):
     """
     Creates edges strictly between the Lead Institutions of citing and cited papers.
     """
-    inst_edges = []
+    inst_edges = {}
     paper_to_lead_insts = {}
 
-    # 1. Map every paper to its FIRST AUTHOR'S institutions
+    year_source_counts = defaultdict(Counter)
+    year_target_counts = defaultdict(Counter)
+
+    year_source_to_targets = defaultdict(lambda: defaultdict(Counter))
+    year_target_to_sources = defaultdict(lambda: defaultdict(Counter))
+
+
+    # 1. Map EVERY paper (main and referenced) to its lead author's institutions
     for paper in papers_data:
         authorships = paper.get("authorships", [])
         if not authorships:
             continue
 
         lead_insts = []
-        # We take authorships[0] as the Lead Author
         for inst in authorships[0].get("institutions", []):
-            inst_id = inst.get("id")
+            inst_id = inst.get("id").split('/')[-1]
             if (
                 inst_id in geo_dict
-                and type(geo_dict[inst_id]["coords"]) != float
-                and geo_dict[inst_id]["coords"] is not None
+                and geo_dict[inst_id]["lat"] is not None
+                and geo_dict[inst_id]["lng"] is not None
             ):
-                if isinstance(geo_dict[inst_id]["coords"], str):
-                    geo_dict[inst_id]["coords"] = tuple(
-                        map(float, geo_dict[inst_id]["coords"].strip("()").split(", "))
-                    )
-                lat, lng = geo_dict[inst_id]["coords"]
-                lead_insts.append({"id": inst_id, "lat": lat, "lng": lng})
+                # Save as an object containing the ID so c["id"] works smoothly later
+                lead_insts.append({
+                    "id": inst_id, 
+                    "lat": geo_dict[inst_id]["lat"], 
+                    "lng": geo_dict[inst_id]["lng"]
+                })
 
         paper_to_lead_insts[paper["id"]] = lead_insts
 
-    # 2. Build the network edges
+    # 2. Build the network edges ONLY for papers that are doing the citing
     for paper in papers_data:
+        # CRITICAL: Skip generating edges if this paper is just a referenced stub 
+        # (it doesn't have "referenced_works" populated anyway)
+        if "referenced_works" not in paper:
+            continue
+            
         citing_id = paper["id"]
         citing_leads = paper_to_lead_insts.get(citing_id, [])
+        year = paper.get("publication_year")
 
         for cited_id in paper.get("referenced_works", []):
-            # Only draw a line if the cited paper is in our 'Lead Lab' map
+            # Now this block will pass successfully because cited_id is in the map!
             if cited_id in paper_to_lead_insts:
                 cited_leads = paper_to_lead_insts[cited_id]
 
                 for c in citing_leads:
                     for r in cited_leads:
                         if c["id"] != r["id"]:
-                            inst_edges.append(
-                                {
+                            # check if the entry already exists in inst_edges, if so, increment the weight instead of adding a new entry
+                            if (c["id"], r["id"], year) in inst_edges:
+                                inst_edges[(c["id"], r["id"], year)]["weight"] += 1.0
+                            else:
+                                inst_edges[(c["id"], r["id"], year)] = {
                                     "source_id": c["id"],
-                                    "source_lat": c["lat"],
-                                    "source_lng": c["lng"],
-                                    "target_id": r["id"],
-                                    "target_lat": r["lat"],
-                                    "target_lng": r["lng"],
-                                    "publication_year": paper.get("publication_year"),
-                                    "weight": 1.0,
-                                }
-                            )
+                                        "target_id": r["id"],
+                                        "publication_year": year,
+                                        "weight": 1.0,
+                                    }
+                            year_source_counts[year][c["id"]] += 1
+                            year_target_counts[year][r["id"]] += 1
+                            
+                            year_source_to_targets[year][c["id"]][r["id"]] += 1
+                            year_target_to_sources[year][r["id"]][c["id"]] += 1
 
-    return pd.DataFrame(inst_edges)
+
+    all_years = sorted(list(year_source_counts.keys()))
+
+    top_sources_by_year = {}
+    top_targets_by_year = {}
+
+    for year in all_years:
+        # --- Top 5 Sources for this specific year ---
+        top_sources_by_year[year] = {}
+        for s_id, total_count in year_source_counts[year].most_common(5):
+            top_3_targets = year_source_to_targets[year][s_id].most_common(3)
+            #add coord and name of institution to the sources and targets
+            for t_id, count in top_3_targets:
+                if t_id in geo_dict:
+                    top_3_targets[top_3_targets.index((t_id, count))] = {
+                        "target_id": t_id,
+                        "count": count
+                    }
+            top_sources_by_year[year][s_id] = {
+                "source_frequency_this_year": total_count,
+                "top_3_targets": top_3_targets
+            }
+
+        # --- Top 5 Targets for this specific year ---
+        top_targets_by_year[year] = {}
+        for t_id, total_count in year_target_counts[year].most_common(5):
+            top_3_sources = year_target_to_sources[year][t_id].most_common(3)
+            #add coord and name of institution to the sources and targets
+            for s_id, count in top_3_sources:
+                if s_id in geo_dict:
+                    top_3_sources[top_3_sources.index((s_id, count))] = {
+                        "source_id": s_id,
+                        "count": count
+                    }
+            top_targets_by_year[year][t_id] = {
+                "target_frequency_this_year": total_count,
+                "top_3_sources": top_3_sources
+            }
+
+    return pd.DataFrame(list(inst_edges.values())), top_sources_by_year, top_targets_by_year
 
 
 def fetch_all_years_raw_data(
-    topic_id, start_year=2010, end_year=2025, papers_per_year=100
+    topic_id, start_year=2010, end_year=2025, papers_per_year=10000
 ):
     """
     Fetches raw paper data (JSON) for a range of years and returns one big list.

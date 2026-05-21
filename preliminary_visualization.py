@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-def generate_geospatial_evolution(df, topic_name, start_year, end_year, step=1):
+def generate_geospatial_evolution(df, geo_dict, topic_name, start_year, end_year, step=1):
     """
     Generates a row of world maps showing the network evolution over time.
     Uses real-world coordinates (Lat/Lng) for node positions.
@@ -38,6 +38,7 @@ def generate_geospatial_evolution(df, topic_name, start_year, end_year, step=1):
     num_years = len(years)
 
     # Create the figure (1 row, many columns)
+    print(num_years)
     fig, axes = plt.subplots(1, num_years, figsize=(6 * num_years, 7))
     if num_years == 1:
         axes = [axes]
@@ -57,16 +58,18 @@ def generate_geospatial_evolution(df, topic_name, start_year, end_year, step=1):
 
         for _, row in current_df.iterrows():
             # Check for valid source coordinates
-            if pd.notnull(row["source_lng"]) and pd.notnull(row["source_lat"]):
-                pos[row["source_id"]] = (row["source_lng"], row["source_lat"])
+            if pd.notnull(geo_dict[row["source_id"]]['lat']) and pd.notnull(geo_dict[row["source_id"]]['lng']):
+                pos[row["source_id"]] = (geo_dict[row["source_id"]]['lng'], geo_dict[row["source_id"]]['lat'])
 
             # Check for valid target coordinates
-            if pd.notnull(row["target_lng"]) and pd.notnull(row["target_lat"]):
-                pos[row["target_id"]] = (row["target_lng"], row["target_lat"])
+            if pd.notnull(geo_dict[row["target_id"]]['lat']) and pd.notnull(geo_dict[row["target_id"]]['lng']):
+                pos[row["target_id"]] = (geo_dict[row["target_id"]]['lng'], geo_dict[row["target_id"]]['lat'])
 
             # Add edge ONLY if both nodes have coordinates
             if row["source_id"] in pos and row["target_id"] in pos:
-                G.add_edge(row["source_id"], row["target_id"], weight=row["weight"])
+                if row["weight"] > 5:
+                    G.add_edge(row["source_id"], row["target_id"], weight=row["weight"])
+            else: print(f"Skipping edge due to missing coordinates: {row['source_id']} -> {row['target_id']}")
 
         # 4. Draw the Network Elements
         if G.number_of_edges() > 0:
