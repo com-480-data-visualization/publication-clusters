@@ -9,8 +9,8 @@ import pandas as pd
 import os
 
 # Topic_ids: T10411 = Solar Cells, T10237 = LHC
-TOPIC_ID = "T10411"
-TOPIC_NAME = "Solar Cells"
+TOPIC_ID = "T10237"
+TOPIC_NAME = "LHC"
 START_YEAR, END_YEAR = 2005, 2025
 
 if not os.path.exists("data"):
