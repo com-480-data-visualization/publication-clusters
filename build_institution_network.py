@@ -57,14 +57,15 @@ def build_institution_geo_dict(papers_data):
 
         lead_author = authorships[0]
         for inst in lead_author.get("institutions", []):
-            inst_id = inst.get("id").split('/')[-1]
-            if inst_id and inst_id not in unique_insts:
-                unique_insts[inst_id] = {
-                    "name": inst.get("display_name"),
-                    "country": inst.get("country_code", ""),
-                    "lat": None,
-                    "lng": None,
-                }
+            if inst.get("id") is not None:
+                inst_id = inst.get("id").split('/')[-1]
+                if inst_id and inst_id not in unique_insts:
+                    unique_insts[inst_id] = {
+                        "name": inst.get("display_name"),
+                        "country": inst.get("country_code", ""),
+                        "lat": None,
+                        "lng": None,
+                    }
 
     print(f"Fetching geo data from OpenAlex for {len(unique_insts)} institutions...")
     inst_ids = list(unique_insts.keys())
@@ -166,6 +167,8 @@ def build_edges_with_geo_dict(papers_data, geo_dict):
 
         lead_insts = []
         for inst in authorships[0].get("institutions", []):
+            if inst.get("id") is None:
+                continue
             inst_id = inst.get("id").split('/')[-1]
             if (
                 inst_id in geo_dict

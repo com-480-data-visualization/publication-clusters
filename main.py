@@ -8,9 +8,9 @@ from preliminary_visualization import generate_geospatial_evolution
 import pandas as pd
 import os
 
-# Topic_ids: T10411 = Solar Cells, T10237 = LHC
-TOPIC_ID = "T10237"
-TOPIC_NAME = "LHC"
+# Topic_ids: T10411 = Solar Cells, T10237 = LHC, T10064 = Complex Network Analysis, T10463 = Pulsars and Gravitational Waves Research, T10049 = Magnetic properties of thin films
+TOPIC_ID = "T10049"
+TOPIC_NAME = "Magnetic Thin Films"
 START_YEAR, END_YEAR = 2005, 2025
 
 if not os.path.exists("data"):
@@ -28,7 +28,7 @@ if os.path.exists(
     ).to_dict(orient="index")
 else:
     raw_data = fetch_all_years_raw_data(
-        TOPIC_ID, start_year=START_YEAR, end_year=END_YEAR, papers_per_year=100
+        TOPIC_ID, start_year=START_YEAR, end_year=END_YEAR, papers_per_year=1000
     )
     all_referenced_ids = set()
     existing_paper_ids = {p["id"] for p in raw_data}
@@ -91,4 +91,4 @@ else:
     top_targets_by_year_df.to_csv(
         f"data/top_targets_by_year_{TOPIC_NAME.replace(' ', '_')}_{START_YEAR}_{END_YEAR}.csv"
     )
-generate_geospatial_evolution(evolution_df, geo_dict, TOPIC_NAME, START_YEAR + 5, END_YEAR, 6)
+generate_geospatial_evolution(evolution_df, geo_dict, TOPIC_NAME, START_YEAR, END_YEAR, 3)
