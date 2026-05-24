@@ -12,6 +12,7 @@ import os
 TOPIC_ID = "T10049"
 TOPIC_NAME = "Magnetic Thin Films"
 START_YEAR, END_YEAR = 2005, 2025
+PAPER_PER_YEAR = 1000
 
 if not os.path.exists("data"):
     os.makedirs("data")
@@ -28,7 +29,7 @@ if os.path.exists(
     ).to_dict(orient="index")
 else:
     raw_data = fetch_all_years_raw_data(
-        TOPIC_ID, start_year=START_YEAR, end_year=END_YEAR, papers_per_year=1000
+        TOPIC_ID, start_year=START_YEAR, end_year=END_YEAR, papers_per_year=PAPER_PER_YEAR
     )
     all_referenced_ids = set()
     existing_paper_ids = {p["id"] for p in raw_data}
