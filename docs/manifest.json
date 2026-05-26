@@ -1,0 +1,35 @@
+{
+  "defaultDataset": "lhc",
+  "datasets": [
+    {
+      "id": "lhc",
+      "label": "LHC",
+      "network": "./data/institution_network_evolution_LHC_2005_2025.csv",
+      "geo": "./data/geo_dict_LHC.csv"
+    },
+    {
+      "id": "solar-cells",
+      "label": "Solar Cells",
+      "network": "./data/institution_network_evolution_Solar_Cells_2005_2025.csv",
+      "geo": "./data/geo_dict_Solar_Cells.csv"
+    },
+    {
+      "id": "gravitational-waves",
+      "label": "Gravitational Waves",
+      "network": "./data/institution_network_evolution_Gravitional_Waves_2005_2025.csv",
+      "geo": "./data/geo_dict_Gravitional_Waves.csv"
+    },
+    {
+      "id": "complex-network-analysis",
+      "label": "Complex Network Analysis",
+      "network": "./data/institution_network_evolution_Complex_Network_Analysis_2005_2025.csv",
+      "geo": "./data/geo_dict_Complex_Network_Analysis.csv"
+    },
+    {
+      "id": "magnetic-thin-films",
+      "label": "Magnetic Thin Films",
+      "network": "./data/institution_network_evolution_Magnetic_Thin_Films_2005_2025.csv",
+      "geo": "./data/geo_dict_Magnetic_Thin_Films.csv"
+    }
+  ]
+}

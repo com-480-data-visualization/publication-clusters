@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Publication Clusters</title>
 
     <link
@@ -11,6 +12,25 @@
     />
 
     <style>
+      :root {
+        --panel-bg: rgba(15, 23, 42, 0.78);
+        --panel-bg-strong: rgba(15, 23, 42, 0.92);
+        --panel-border: rgba(255, 255, 255, 0.16);
+        --text-main: #f8fafc;
+        --text-muted: #cbd5e1;
+        --text-soft: #94a3b8;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.18);
+        --node-single: #fb7185;
+        --node-cluster: #fbbf24;
+        --edge-color: #38bdf8;
+        --danger: #f87171;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       html,
       body,
       #cesiumContainer {
@@ -21,47 +41,374 @@
         overflow: hidden;
       }
 
+      body {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #020617;
+      }
+
+      #cesiumContainer {
+        position: absolute;
+        inset: 0;
+      }
+
+      .app-shell {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 100;
+      }
+
       #toolbar {
         position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 100;
-        background: rgba(42, 42, 42, 0.85);
-        color: white;
-        padding: 12px;
-        border-radius: 8px;
-        font-family: sans-serif;
+        top: 20px;
+        left: 20px;
+        width: min(340px, calc(100vw - 40px));
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        padding: 18px;
+        color: var(--text-main);
+        background: var(--panel-bg);
+        border: 1px solid var(--panel-border);
+        border-radius: 22px;
+        box-shadow:
+          0 24px 80px rgba(0, 0, 0, 0.42),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+        pointer-events: auto;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 5px 9px;
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        border-radius: 999px;
+        color: #bae6fd;
+        background: rgba(8, 47, 73, 0.42);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
+      }
+
+      .toolbar-title {
+        margin: 0;
+        font-size: 21px;
+        line-height: 1.15;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .toolbar-subtitle {
+        margin: 8px 0 18px;
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .control-card {
+        display: grid;
+        gap: 14px;
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.34);
+      }
+
+      .control-group {
+        display: grid;
+        gap: 7px;
+      }
+
+      .control-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      label,
+      .section-label {
+        color: var(--text-soft);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      select {
+        width: 100%;
+        appearance: none;
+        padding: 11px 40px 11px 12px;
+        color: var(--text-main);
+        background:
+          linear-gradient(45deg, transparent 50%, var(--text-muted) 50%)
+            calc(100% - 18px) 50% / 6px 6px no-repeat,
+          linear-gradient(135deg, var(--text-muted) 50%, transparent 50%)
+            calc(100% - 13px) 50% / 6px 6px no-repeat,
+          var(--panel-bg-strong);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 13px;
+        outline: none;
+        font: inherit;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
       }
 
       #yearSlider {
-        width: 220px;
+        width: 100%;
+        margin: 2px 0 0;
+        accent-color: var(--accent);
+        cursor: pointer;
       }
 
       #yearValue {
-        font-weight: bold;
-        margin-left: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 62px;
+        padding: 5px 10px;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: #e0f2fe;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .stat {
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.58);
+      }
+
+      .stat-value {
+        display: block;
+        color: var(--text-main);
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .stat-label {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-soft);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .legend {
+        display: grid;
+        gap: 9px;
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.28);
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      .legend-dot {
+        width: 11px;
+        height: 11px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .legend-dot.single {
+        background: var(--node-single);
+      }
+
+      .legend-dot.cluster {
+        background: var(--node-cluster);
+      }
+
+      .legend-line {
+        width: 24px;
+        height: 3px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: var(--edge-color);
+        opacity: 0.85;
+      }
+
+      #statusMessage {
+        margin-top: 14px;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      #statusMessage.error {
+        color: var(--danger);
+      }
+
+      .credit-pill {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        max-width: min(420px, calc(100vw - 40px));
+        padding: 10px 12px;
+        color: var(--text-muted);
+        background: rgba(15, 23, 42, 0.62);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        font-size: 12px;
+        backdrop-filter: blur(14px);
+        pointer-events: none;
+      }
+
+      /* Cleaner Cesium default UI */
+      .cesium-viewer-bottom,
+      .cesium-credit-lightbox-overlay,
+      .cesium-credit-lightbox {
+        z-index: 200;
+      }
+
+      @media (max-width: 640px) {
+        #toolbar {
+          top: 12px;
+          left: 12px;
+          width: calc(100vw - 24px);
+          padding: 15px;
+          border-radius: 18px;
+        }
+
+        .toolbar-title {
+          font-size: 19px;
+        }
+
+        .credit-pill {
+          display: none;
+        }
       }
     </style>
   </head>
 
   <body>
-    <div id="toolbar">
-      <div>
-        <label>Dataset:</label>
-        <select id="datasetSelect">
-          <option value="A">LHC</option>
-          <option value="B">Solar Cells</option>
-        </select>
-      </div>
-
-      <div style="margin-top: 8px">
-        <label>Year:</label>
-        <input type="range" id="yearSlider" />
-        <span id="yearValue"></span>
-      </div>
-    </div>
-
     <div id="cesiumContainer"></div>
+
+    <main class="app-shell">
+      <section id="toolbar" aria-label="Visualization controls">
+        <div class="eyebrow">
+          <span class="status-dot"></span>
+          Network map
+        </div>
+
+        <h1 class="toolbar-title">Publication Clusters</h1>
+        <p class="toolbar-subtitle">
+          Explore how institutional collaboration networks evolve over time.
+        </p>
+
+        <div class="control-card">
+          <div class="control-group">
+            <label for="datasetSelect">Dataset</label>
+            <select id="datasetSelect">
+              <option value="">Loading datasets…</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <label for="yearSlider">Publication year</label>
+              <span id="yearValue">—</span>
+            </div>
+            <input type="range" id="yearSlider" />
+          </div>
+        </div>
+
+        <div class="stats-grid" aria-label="Current network statistics">
+          <div class="stat">
+            <span id="nodeCount" class="stat-value">—</span>
+            <span class="stat-label">Institutions</span>
+          </div>
+
+          <div class="stat">
+            <span id="edgeCount" class="stat-value">—</span>
+            <span class="stat-label">Links</span>
+          </div>
+
+          <div class="stat">
+            <span id="clusterCount" class="stat-value">—</span>
+            <span class="stat-label">Visible nodes</span>
+          </div>
+
+          <div class="stat">
+            <span id="visibleEdgeCount" class="stat-value">—</span>
+            <span class="stat-label">Visible links</span>
+          </div>
+        </div>
+
+        <div class="legend" aria-label="Legend">
+          <div class="section-label">Legend</div>
+
+          <div class="legend-item">
+            <span class="legend-dot single"></span>
+            <span>Single institution</span>
+          </div>
+
+          <div class="legend-item">
+            <span class="legend-dot cluster"></span>
+            <span>Clustered institutions</span>
+          </div>
+
+          <div class="legend-item">
+            <span class="legend-line"></span>
+            <span>Collaboration link</span>
+          </div>
+        </div>
+
+        <div id="statusMessage">Loading publication network data…</div>
+      </section>
+
+      <div class="credit-pill">
+        Scroll or drag the globe to explore. Clusters update automatically with
+        zoom level.
+      </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.140/Build/Cesium/Cesium.js"></script>
