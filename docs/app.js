@@ -24,21 +24,24 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
     selectionIndicator: false,
 });
 
-viewer.scene.globe.depthTestAgainstTerrain = false;
+viewer.scene.globe.depthTestAgainstTerrain = true;
 viewer.scene.globe.enableLighting = true;
 viewer.scene.skyAtmosphere.show = true;
 viewer.scene.fog.enabled = true;
 viewer.scene.highDynamicRange = true;
 
 // A slightly more cinematic starting view before data loads
-viewer.camera.setView({
+const INITIAL_CAMERA_VIEW = {
     destination: Cesium.Cartesian3.fromDegrees(8, 30, 24_000_000),
     orientation: {
         heading: 0,
         pitch: -1.35,
         roll: 0,
     },
-});
+};
+
+// A slightly more cinematic starting view before data loads
+viewer.camera.setView(INITIAL_CAMERA_VIEW);
 
 const pointDataSource = new Cesium.CustomDataSource("superpoints");
 const edgeDataSource = new Cesium.CustomDataSource("superedges");
@@ -54,6 +57,8 @@ const datasets = {};
 const geoByDataset = {};
 const graphCache = {};
 const datasetLabels = {};
+const topSourcesByDataset = {};
+const topTargetsByDataset = {};
 let datasetManifest = [];
 
 let currentDataset = null;
@@ -61,7 +66,7 @@ let lastRefreshKey = null;
 let hasInitialZoomed = false;
 
 const HIDE_SELF_LOOPS = true;
-const DIRECTED_EDGES = false;
+const DIRECTED_EDGES = true;
 
 // --------------------------------------------------
 // DOM elements
@@ -70,12 +75,15 @@ const DIRECTED_EDGES = false;
 const yearSlider = document.getElementById("yearSlider");
 const yearValue = document.getElementById("yearValue");
 const datasetSelect = document.getElementById("datasetSelect");
+const resetCameraButton = document.getElementById("resetCameraButton");
 
 const nodeCountEl = document.getElementById("nodeCount");
 const edgeCountEl = document.getElementById("edgeCount");
 const clusterCountEl = document.getElementById("clusterCount");
 const visibleEdgeCountEl = document.getElementById("visibleEdgeCount");
 const statusMessage = document.getElementById("statusMessage");
+const topProducersList = document.getElementById("topProducersList");
+const topConsumersList = document.getElementById("topConsumersList");
 
 //
 // Manifest Helpers
@@ -112,6 +120,8 @@ function registerDatasetsFromManifest(manifest) {
         datasets[dataset.id] = [];
         geoByDataset[dataset.id] = new Map();
         graphCache[dataset.id] = new Map();
+        topSourcesByDataset[dataset.id] = [];
+        topTargetsByDataset[dataset.id] = [];
         datasetLabels[dataset.id] = dataset.label ?? dataset.id;
     }
 
@@ -193,13 +203,17 @@ function buildGeoMap(rows) {
 }
 
 async function loadDataset(datasetConfig) {
-    const [networkRows, geoRows] = await Promise.all([
+    const [networkRows, geoRows, topSourcesRows, topTargetsRows] = await Promise.all([
         loadCSV(datasetConfig.network),
         loadCSV(datasetConfig.geo),
+        datasetConfig.topSources ? loadCSV(datasetConfig.topSources) : Promise.resolve([]),
+        datasetConfig.topTargets ? loadCSV(datasetConfig.topTargets) : Promise.resolve([]),
     ]);
 
     datasets[datasetConfig.id] = networkRows;
     geoByDataset[datasetConfig.id] = buildGeoMap(geoRows);
+    topSourcesByDataset[datasetConfig.id] = topSourcesRows;
+    topTargetsByDataset[datasetConfig.id] = topTargetsRows;
 }
 
 setStatus("Loading publication network data…");
@@ -236,6 +250,76 @@ function formatNumber(value) {
     return new Intl.NumberFormat("en").format(value ?? 0);
 }
 
+function getTopRowYear(row) {
+    return Number(row.publication_year ?? row.year ?? Object.values(row)[0]);
+}
+
+function getTopRowInstitutionId(row) {
+    return cleanId(
+        row.institution_id ??
+        row.source_id ??
+        row.target_id ??
+        row.id ??
+        Object.values(row)[1]
+    );
+}
+
+function getTopRowCount(row, mode) {
+    const key =
+        mode === "source"
+            ? "source_frequency_this_year"
+            : "target_frequency_this_year";
+
+    return toNumber(row[key] ?? row.count ?? row.frequency ?? Object.values(row)[2]) ?? 0;
+}
+
+function renderLeaderboardList(element, rows, year, mode) {
+    const geoMap = geoByDataset[currentDataset];
+
+    const topRows = rows
+        .filter((row) => getTopRowYear(row) === year)
+        .slice(0, 5);
+
+    element.innerHTML = "";
+
+    if (!topRows.length) {
+        element.innerHTML = "<li>No leaderboard data for this year.</li>";
+        return;
+    }
+
+    for (const row of topRows) {
+        const institutionId = getTopRowInstitutionId(row);
+        const geo = geoMap.get(institutionId);
+        const name = geo?.name ?? institutionId;
+        const country = geo?.country ? `, ${geo.country}` : "";
+        const count = getTopRowCount(row, mode);
+
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <strong>${name}</strong>
+            <span>${country} · ${formatNumber(count)} citations</span>
+        `;
+
+        element.appendChild(li);
+    }
+}
+
+function updateLeaderboards(year) {
+    renderLeaderboardList(
+        topProducersList,
+        topSourcesByDataset[currentDataset] ?? [],
+        year,
+        "source"
+    );
+
+    renderLeaderboardList(
+        topConsumersList,
+        topTargetsByDataset[currentDataset] ?? [],
+        year,
+        "target"
+    );
+}
+
 function getYears(data) {
     return data
         .map((row) => Number(row.publication_year))
@@ -247,8 +331,8 @@ function toNumber(value) {
     return Number.isFinite(number) ? number : null;
 }
 
-function makePosition(lon, lat) {
-    return Cesium.Cartesian3.fromDegrees(lon, lat, 0);
+function makePosition(lon, lat, height = 160_000) {
+    return Cesium.Cartesian3.fromDegrees(lon, lat, height);
 }
 
 function edgeKey(a, b, directed = false) {
@@ -303,15 +387,20 @@ function getRefreshKey(year) {
 // --------------------------------------------------
 
 function addNodeFromGeo(nodeMap, id, geo) {
-    if (!id || !geo || nodeMap.has(id)) return;
+    if (!id || !geo) return;
 
-    nodeMap.set(id, {
-        id,
-        name: geo.name ?? id,
-        country: geo.country ?? "",
-        lon: geo.lon,
-        lat: geo.lat,
-    });
+    if (!nodeMap.has(id)) {
+        nodeMap.set(id, {
+            id,
+            name: geo.name ?? id,
+            country: geo.country ?? "",
+            lon: geo.lon,
+            lat: geo.lat,
+            incomingWeight: 0,
+            outgoingWeight: 0,
+            totalWeight: 0,
+        });
+    }
 }
 
 function buildGraphForYear(data, geoMap, year) {
@@ -336,10 +425,21 @@ function buildGraphForYear(data, geoMap, year) {
         addNodeFromGeo(nodeMap, sourceId, sourceGeo);
         addNodeFromGeo(nodeMap, targetId, targetGeo);
 
+        const weight = toNumber(row.weight) ?? 1;
+
+        const sourceNode = nodeMap.get(sourceId);
+        const targetNode = nodeMap.get(targetId);
+
+        sourceNode.outgoingWeight += weight;
+        sourceNode.totalWeight += weight;
+
+        targetNode.incomingWeight += weight;
+        targetNode.totalWeight += weight;
+
         edges.push({
             source: sourceId,
             target: targetId,
-            weight: toNumber(row.weight) ?? 1,
+            weight,
             row,
         });
     }
@@ -386,6 +486,22 @@ function zoomToGraph(graph) {
     });
 }
 
+function resetCamera() {
+    const year = Number(yearSlider.value);
+    const graph = graphCache[currentDataset]?.get(year);
+
+    if (graph && graph.nodes.length) {
+        zoomToGraph(graph);
+    } else {
+        viewer.camera.flyTo({
+            ...INITIAL_CAMERA_VIEW,
+            duration: 1.5,
+        });
+    }
+
+    viewer.scene.requestRender();
+}
+
 // --------------------------------------------------
 // World-space clustering
 // --------------------------------------------------
@@ -422,11 +538,29 @@ function computeSuperpoints(nodes, cellSizeDeg) {
         const count = members.length;
         const superId = `sp_${index++}`;
 
+        const totalWeight = members.reduce(
+            (sum, member) => sum + (member.totalWeight ?? 0),
+            0
+        );
+
+        const incomingWeight = members.reduce(
+            (sum, member) => sum + (member.incomingWeight ?? 0),
+            0
+        );
+
+        const outgoingWeight = members.reduce(
+            (sum, member) => sum + (member.outgoingWeight ?? 0),
+            0
+        );
+
         const superpoint = {
             id: superId,
             lon: lonSum / count,
             lat: latSum / count,
             count,
+            totalWeight,
+            incomingWeight,
+            outgoingWeight,
             members: members.map((member) => member.id),
         };
 
@@ -489,9 +623,11 @@ function aggregateEdges(rawEdges, nodeToSuperpoint, directed = DIRECTED_EDGES) {
 // Styling
 // --------------------------------------------------
 
-function getSuperpointPixelSize(count) {
-    if (count <= 1) return 10;
-    return Math.min(54, 10 + Math.sqrt(count) * 6);
+function getSuperpointPixelSize(superpoint) {
+    const volume = superpoint.totalWeight ?? 0;
+    const clusterBoost = Math.sqrt(superpoint.count ?? 1) * 2;
+
+    return Math.min(60, 8 + Math.sqrt(volume) * 1.25 + clusterBoost);
 }
 
 function getEdgeWidth(weight) {
@@ -530,7 +666,7 @@ function renderSuperpoints(superpoints) {
 
     for (const superpoint of superpoints) {
         const isCluster = superpoint.count > 1;
-        const pixelSize = getSuperpointPixelSize(superpoint.count);
+        const pixelSize = getSuperpointPixelSize(superpoint);
 
         pointDataSource.entities.add({
             id: superpoint.id,
@@ -541,13 +677,18 @@ function renderSuperpoints(superpoints) {
                 color: getNodeColor(superpoint.count),
                 outlineColor: getNodeOutlineColor(),
                 outlineWidth: isCluster ? 2.4 : 1.8,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+
+                // Important: let the globe hide points on the far side.
+                disableDepthTestDistance: 0,
+
+                // Optional: make front-side nodes fully solid.
                 translucencyByDistance: new Cesium.NearFarScalar(
                     500_000,
                     1.0,
                     25_000_000,
-                    0.78
+                    1.0
                 ),
+
                 scaleByDistance: new Cesium.NearFarScalar(
                     500_000,
                     1.0,
@@ -573,14 +714,24 @@ function renderSuperpoints(superpoints) {
                     backgroundColor: Cesium.Color.fromCssColorString("#f8fafc").withAlpha(0.86),
                     backgroundPadding: new Cesium.Cartesian2(7, 4),
 
-                    disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                    disableDepthTestDistance: 0,
                     scale: 1.0,
                 }
                 : undefined,
 
+            description: `
+                <strong>${superpoint.count} institution${superpoint.count === 1 ? "" : "s"}</strong><br/>
+                Total citation volume: ${formatNumber(superpoint.totalWeight)}<br/>
+                Outgoing citations: ${formatNumber(superpoint.outgoingWeight)}<br/>
+                Incoming citations: ${formatNumber(superpoint.incomingWeight)}
+            `,
+
             properties: {
                 type: "superpoint",
                 count: superpoint.count,
+                totalWeight: superpoint.totalWeight,
+                incomingWeight: superpoint.incomingWeight,
+                outgoingWeight: superpoint.outgoingWeight,
                 members: superpoint.members,
             },
         });
@@ -601,14 +752,22 @@ function renderSuperEdges(superpoints, superEdges) {
         edgeDataSource.entities.add({
             polyline: {
                 positions: [
-                    makePosition(source.lon, source.lat),
-                    makePosition(target.lon, target.lat),
+                    makePosition(source.lon, source.lat, 20_000),
+                    makePosition(target.lon, target.lat, 20_000),
                 ],
                 width: getEdgeWidth(edge.weight),
-                material: getEdgeColor(edge.weight),
+                material: new Cesium.PolylineArrowMaterialProperty(
+                    getEdgeColor(edge.weight)
+                ),
                 clampToGround: false,
                 arcType: Cesium.ArcType.GEODESIC,
             },
+
+            description: `
+                <strong>Directed citation flow</strong><br/>
+                Citation volume: ${formatNumber(edge.weight)}<br/>
+                Institution-pair links: ${formatNumber(edge.edgeCount)}
+            `,
 
             properties: {
                 type: "superedge",
@@ -650,6 +809,7 @@ function refreshGraph(year, options = {}) {
     if (!graph || !graph.nodes.length) {
         yearValue.textContent = year;
         updateStats(null, [], []);
+        updateLeaderboards(year);
         setStatus(`No data found for ${datasetLabels[currentDataset]} in ${year}.`);
         viewer.scene.requestRender();
         return;
@@ -668,6 +828,7 @@ function refreshGraph(year, options = {}) {
 
     yearValue.textContent = year;
     updateStats(graph, superpoints, superEdges);
+    updateLeaderboards(year);
 
     setStatus(
         `${datasetLabels[currentDataset]} · ${year} · clustering cell size ${cellSizeDeg}°`
@@ -756,6 +917,8 @@ datasetSelect.addEventListener("change", function () {
         force: true,
     });
 });
+
+resetCameraButton.addEventListener("click", resetCamera);
 
 viewer.camera.moveEnd.addEventListener(
     debounce(() => {

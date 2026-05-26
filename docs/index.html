@@ -185,6 +185,71 @@
         cursor: pointer;
       }
 
+      .reset-camera-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 11px 14px;
+        color: #e0f2fe;
+        background:
+          linear-gradient(
+            135deg,
+            rgba(56, 189, 248, 0.22),
+            rgba(14, 165, 233, 0.08)
+          ),
+          rgba(15, 23, 42, 0.72);
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        border-radius: 14px;
+        box-shadow:
+          0 14px 32px rgba(8, 47, 73, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition:
+          transform 140ms ease,
+          border-color 140ms ease,
+          background 140ms ease,
+          box-shadow 140ms ease;
+      }
+
+      .reset-camera-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(56, 189, 248, 0.55);
+        background:
+          linear-gradient(
+            135deg,
+            rgba(56, 189, 248, 0.3),
+            rgba(14, 165, 233, 0.12)
+          ),
+          rgba(15, 23, 42, 0.82);
+        box-shadow:
+          0 18px 42px rgba(8, 47, 73, 0.36),
+          0 0 0 4px rgba(56, 189, 248, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+
+      .reset-camera-button:active {
+        transform: translateY(0);
+      }
+
+      .reset-camera-button:focus-visible {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow:
+          0 0 0 4px rgba(56, 189, 248, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+
+      .reset-camera-icon {
+        font-size: 15px;
+        line-height: 1;
+      }
+
       #yearValue {
         display: inline-flex;
         align-items: center;
@@ -325,6 +390,40 @@
           display: none;
         }
       }
+
+      .leaderboards {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .leaderboard {
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.28);
+      }
+
+      .leaderboard-list {
+        display: grid;
+        gap: 7px;
+        margin: 10px 0 0;
+        padding-left: 20px;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      .leaderboard-list li {
+        line-height: 1.35;
+      }
+
+      .leaderboard-list strong {
+        color: var(--text-main);
+      }
+
+      .leaderboard-list span {
+        color: var(--text-soft);
+      }
     </style>
   </head>
 
@@ -335,13 +434,15 @@
       <section id="toolbar" aria-label="Visualization controls">
         <div class="eyebrow">
           <span class="status-dot"></span>
-          Network map
+          Citation flow map
         </div>
 
         <h1 class="toolbar-title">Publication Clusters</h1>
         <p class="toolbar-subtitle">
-          Explore how institutional collaboration networks evolve over time.
+          Explore how citation flows between institutions evolve over time.
         </p>
+
+        <label for="datasetSelect">Research topic</label>
 
         <div class="control-card">
           <div class="control-group">
@@ -358,7 +459,16 @@
             </div>
             <input type="range" id="yearSlider" />
           </div>
-        </div>
+
+          <button
+            id="resetCameraButton"
+            class="reset-camera-button"
+            type="button"
+            aria-label="Reset camera view"
+          >
+            <span class="reset-camera-icon" aria-hidden="true">↺</span>
+            Reset camera
+          </button>
 
         <div class="stats-grid" aria-label="Current network statistics">
           <div class="stat">
@@ -382,6 +492,25 @@
           </div>
         </div>
 
+        <div
+          class="leaderboards"
+          aria-label="Top citation producers and consumers"
+        >
+          <div class="leaderboard">
+            <div class="section-label">Top producers</div>
+            <ol id="topProducersList" class="leaderboard-list">
+              <li>Loading…</li>
+            </ol>
+          </div>
+
+          <div class="leaderboard">
+            <div class="section-label">Top consumers</div>
+            <ol id="topConsumersList" class="leaderboard-list">
+              <li>Loading…</li>
+            </ol>
+          </div>
+        </div>
+
         <div class="legend" aria-label="Legend">
           <div class="section-label">Legend</div>
 
@@ -397,7 +526,7 @@
 
           <div class="legend-item">
             <span class="legend-line"></span>
-            <span>Collaboration link</span>
+            <span>Directed citation flow</span>
           </div>
         </div>
 
