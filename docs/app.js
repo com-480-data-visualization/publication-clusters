@@ -59,11 +59,17 @@ const graphCache = {};
 const datasetLabels = {};
 const topSourcesByDataset = {};
 const topTargetsByDataset = {};
+
 let datasetManifest = [];
+let datasetConfigById = new Map();
+
+const loadedDatasets = new Set();
+const datasetLoadingPromises = new Map();
 
 let currentDataset = null;
 let lastRefreshKey = null;
 let hasInitialZoomed = false;
+let appStarted = false;
 
 const HIDE_SELF_LOOPS = true;
 const DIRECTED_EDGES = true;
@@ -76,6 +82,9 @@ const yearSlider = document.getElementById("yearSlider");
 const yearValue = document.getElementById("yearValue");
 const datasetSelect = document.getElementById("datasetSelect");
 const resetCameraButton = document.getElementById("resetCameraButton");
+
+const introOverlay = document.getElementById("introOverlay");
+const startGlobeButton = document.getElementById("startGlobeButton");
 
 const nodeCountEl = document.getElementById("nodeCount");
 const edgeCountEl = document.getElementById("edgeCount");
@@ -119,6 +128,7 @@ async function loadManifest(path = "./manifest.json") {
 
 function registerDatasetsFromManifest(manifest) {
     datasetManifest = manifest.datasets;
+    datasetConfigById = new Map();
 
     for (const dataset of datasetManifest) {
         if (!dataset.id) {
@@ -129,6 +139,8 @@ function registerDatasetsFromManifest(manifest) {
             throw new Error(`Dataset "${dataset.id}" needs both network and geo CSV paths.`);
         }
 
+        datasetConfigById.set(dataset.id, dataset);
+
         datasets[dataset.id] = [];
         geoByDataset[dataset.id] = new Map();
         graphCache[dataset.id] = new Map();
@@ -138,7 +150,7 @@ function registerDatasetsFromManifest(manifest) {
     }
 
     currentDataset =
-        manifest.defaultDataset && datasets[manifest.defaultDataset]
+        manifest.defaultDataset && datasetConfigById.has(manifest.defaultDataset)
             ? manifest.defaultDataset
             : datasetManifest[0].id;
 }
@@ -226,27 +238,59 @@ async function loadDataset(datasetConfig) {
     geoByDataset[datasetConfig.id] = buildGeoMap(geoRows);
     topSourcesByDataset[datasetConfig.id] = topSourcesRows;
     topTargetsByDataset[datasetConfig.id] = topTargetsRows;
+
+    buildGraphCacheForDataset(datasetConfig.id);
+
+    loadedDatasets.add(datasetConfig.id);
 }
 
-setStatus("Loading publication network data…");
+async function ensureDatasetLoaded(datasetId) {
+    if (loadedDatasets.has(datasetId)) {
+        return;
+    }
+
+    if (datasetLoadingPromises.has(datasetId)) {
+        return datasetLoadingPromises.get(datasetId);
+    }
+
+    const datasetConfig = datasetConfigById.get(datasetId);
+
+    if (!datasetConfig) {
+        throw new Error(`Unknown dataset: ${datasetId}`);
+    }
+
+    setStatus(`Loading ${datasetLabels[datasetId]} data…`);
+
+    const loadingPromise = loadDataset(datasetConfig)
+        .then(() => {
+            setStatus(`${datasetLabels[datasetId]} loaded.`);
+        })
+        .catch((error) => {
+            console.error(`Failed to load dataset "${datasetId}":`, error);
+            setStatus(`Failed to load ${datasetLabels[datasetId]} data.`, true);
+            throw error;
+        })
+        .finally(() => {
+            datasetLoadingPromises.delete(datasetId);
+        });
+
+    datasetLoadingPromises.set(datasetId, loadingPromise);
+
+    return loadingPromise;
+}
+
+setStatus("Preparing visualization…");
 
 loadManifest("./manifest.json")
-    .then(async (manifest) => {
+    .then((manifest) => {
         registerDatasetsFromManifest(manifest);
         populateDatasetSelect();
 
-        await Promise.all(datasetManifest.map(loadDataset));
-
-        for (const dataset of datasetManifest) {
-            buildGraphCacheForDataset(dataset.id);
-        }
-
-        initUI();
-        setStatus("Ready.");
+        setStatus("Choose a topic, then start exploring.");
     })
     .catch((error) => {
         console.error("Startup failed:", error);
-        setStatus("Failed to load data.", true);
+        setStatus("Failed to load manifest.", true);
     });
 
 // --------------------------------------------------
@@ -838,14 +882,14 @@ function refreshGraph(year, options = {}) {
     currentSuperpointsById = new Map(superpoints.map((sp) => [sp.id, sp]));
 
     if (selectedInstitutionId) {
-    const containing = superpoints.find((sp) =>
-        sp.members.some((m) => m.id === selectedInstitutionId)
-    );
-    if (containing) {
-        showInfoForSuperpoint(containing, { preserveInstitutionId: true });
-    } else {
-        hideInfoPanel();
-    }
+        const containing = superpoints.find((sp) =>
+            sp.members.some((m) => m.id === selectedInstitutionId)
+        );
+        if (containing) {
+            showInfoForSuperpoint(containing, { preserveInstitutionId: true });
+        } else {
+            hideInfoPanel();
+        }
     } else if (!infoPanel.hidden) {
         hideInfoPanel();
     }
@@ -922,20 +966,22 @@ function showYear(year, options = {}) {
     refreshGraph(year, options);
 }
 
-function initUI() {
+async function initUI() {
+    await ensureDatasetLoaded(currentDataset);
+
     updateSliderRange();
 
-    setTimeout(() => {
-        showYear(Number(yearSlider.value), {
-            zoom: true,
-            force: true,
-        });
+    showYear(Number(yearSlider.value), {
+        zoom: true,
+        force: true,
+    });
 
-        hasInitialZoomed = true;
-    }, 150);
+    hasInitialZoomed = true;
 }
 
 yearSlider.addEventListener("input", function () {
+    if (!loadedDatasets.has(currentDataset)) return;
+
     const selectedYear = Number(this.value);
     yearValue.textContent = selectedYear;
 
@@ -944,22 +990,78 @@ yearSlider.addEventListener("input", function () {
     });
 });
 
-datasetSelect.addEventListener("change", function () {
+datasetSelect.addEventListener("change", async function () {
     const previousYear = Number(yearSlider.value);
     currentDataset = this.value;
     lastRefreshKey = null;
-    updateSliderRange();
+    hasInitialZoomed = false;
 
-    const min = Number(yearSlider.min);
-    const max = Number(yearSlider.max);
-    if (Number.isFinite(previousYear) && previousYear >= min && previousYear <= max) {
-        yearSlider.value = previousYear;
-        yearValue.textContent = previousYear;
+    pointDataSource.entities.removeAll();
+    edgeDataSource.entities.removeAll();
+    updateStats(null, [], []);
+    yearValue.textContent = "—";
+
+    try {
+        await ensureDatasetLoaded(currentDataset);
+
+        updateSliderRange();
+
+        const min = Number(yearSlider.min);
+        const max = Number(yearSlider.max);
+
+        if (
+            Number.isFinite(previousYear) &&
+            previousYear >= min &&
+            previousYear <= max
+        ) {
+            yearSlider.value = previousYear;
+            yearValue.textContent = previousYear;
+        }
+
+        showYear(Number(yearSlider.value), {
+            zoom: true,
+            force: true,
+        });
+    } catch (error) {
+        console.error(error);
+        setStatus(`Failed to load ${datasetLabels[currentDataset]} data.`, true);
     }
-    showYear(Number(yearSlider.value), { zoom: true, force: true });
 });
 
 resetCameraButton.addEventListener("click", resetCamera);
+
+if (introOverlay && startGlobeButton) {
+    startGlobeButton.addEventListener("click", async () => {
+        if (appStarted) return;
+
+        appStarted = true;
+        startGlobeButton.disabled = true;
+        startGlobeButton.textContent = "Loading globe…";
+
+        // Hide the overlay first so the click feels immediate.
+        introOverlay.classList.add("is-hidden");
+        viewer.scene.requestRender();
+
+        // Give the browser one frame to paint the fade-out before loading CSVs.
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+
+        try {
+            await initUI();
+            setStatus("Ready.");
+        } catch (error) {
+            console.error(error);
+            setStatus("Failed to start visualization.", true);
+
+            // Bring the overlay back if loading fails.
+            introOverlay.classList.remove("is-hidden");
+            startGlobeButton.disabled = false;
+            startGlobeButton.textContent = "Try again";
+            appStarted = false;
+        }
+    });
+} else {
+    console.warn("Intro overlay or start button was not found.");
+}
 
 viewer.camera.moveEnd.addEventListener(
     debounce(() => {
@@ -994,7 +1096,7 @@ playButton.addEventListener("click", () => {
 //
 
 function makeStat(value, label) {
-  return `
+    return `
     <div class="stat">
       <span class="stat-value">${value}</span>
       <span class="stat-label">${label}</span>
@@ -1003,40 +1105,40 @@ function makeStat(value, label) {
 }
 
 function showInfoForSuperpoint(superpoint, options = {}) {
-  const { preserveInstitutionId = false } = options;
-  const isCluster = superpoint.count > 1;
+    const { preserveInstitutionId = false } = options;
+    const isCluster = superpoint.count > 1;
 
-  if (isCluster) {
-    infoPanelType.textContent = `Cluster · ${superpoint.count} institutions`;
-    infoPanelTitle.textContent = `${superpoint.count} institutions`;
+    if (isCluster) {
+        infoPanelType.textContent = `Cluster · ${superpoint.count} institutions`;
+        infoPanelTitle.textContent = `${superpoint.count} institutions`;
 
-    const countries = [
-      ...new Set(superpoint.members.map((m) => m.country).filter(Boolean)),
-    ];
-    const countryLabel =
-      countries.length === 0
-        ? ""
-        : countries.length === 1
-          ? countries[0]
-          : `${countries.length} countries`;
+        const countries = [
+            ...new Set(superpoint.members.map((m) => m.country).filter(Boolean)),
+        ];
+        const countryLabel =
+            countries.length === 0
+                ? ""
+                : countries.length === 1
+                    ? countries[0]
+                    : `${countries.length} countries`;
 
-    infoPanelSubtitle.textContent =
-      `${countryLabel}${countryLabel ? " · " : ""}zoom in to break the cluster apart`;
+        infoPanelSubtitle.textContent =
+            `${countryLabel}${countryLabel ? " · " : ""}zoom in to break the cluster apart`;
 
-    infoPanelStats.innerHTML = [
-      makeStat(formatNumber(superpoint.totalWeight), "Total citations"),
-      makeStat(formatNumber(superpoint.outgoingWeight), "Outgoing"),
-      makeStat(formatNumber(superpoint.incomingWeight), "Incoming"),
-      makeStat(formatNumber(superpoint.count), "Institutions"),
-    ].join("");
+        infoPanelStats.innerHTML = [
+            makeStat(formatNumber(superpoint.totalWeight), "Total citations"),
+            makeStat(formatNumber(superpoint.outgoingWeight), "Outgoing"),
+            makeStat(formatNumber(superpoint.incomingWeight), "Incoming"),
+            makeStat(formatNumber(superpoint.count), "Institutions"),
+        ].join("");
 
-    const sorted = [...superpoint.members].sort(
-      (a, b) => (b.totalWeight ?? 0) - (a.totalWeight ?? 0)
-    );
+        const sorted = [...superpoint.members].sort(
+            (a, b) => (b.totalWeight ?? 0) - (a.totalWeight ?? 0)
+        );
 
-    infoPanelMembers.innerHTML = sorted
-      .map(
-        (m) => `
+        infoPanelMembers.innerHTML = sorted
+            .map(
+                (m) => `
           <li>
             <strong>${m.name}</strong>
             <span>
@@ -1047,36 +1149,36 @@ function showInfoForSuperpoint(superpoint, options = {}) {
             </span>
           </li>
         `
-      )
-      .join("");
+            )
+            .join("");
 
-    infoPanelMembersWrap.hidden = false;
+        infoPanelMembersWrap.hidden = false;
 
-    if (!preserveInstitutionId) {
-      selectedInstitutionId = null;
+        if (!preserveInstitutionId) {
+            selectedInstitutionId = null;
+        }
+    } else {
+        const inst = superpoint.members[0];
+        infoPanelType.textContent = "Institution";
+        infoPanelTitle.textContent = inst.name;
+        infoPanelSubtitle.textContent = inst.country || "";
+
+        infoPanelStats.innerHTML = [
+            makeStat(formatNumber(inst.totalWeight), "Total citations"),
+            makeStat(formatNumber(inst.outgoingWeight), "Outgoing"),
+            makeStat(formatNumber(inst.incomingWeight), "Incoming"),
+        ].join("");
+
+        infoPanelMembersWrap.hidden = true;
+        selectedInstitutionId = inst.id;
     }
-  } else {
-    const inst = superpoint.members[0];
-    infoPanelType.textContent = "Institution";
-    infoPanelTitle.textContent = inst.name;
-    infoPanelSubtitle.textContent = inst.country || "";
 
-    infoPanelStats.innerHTML = [
-      makeStat(formatNumber(inst.totalWeight), "Total citations"),
-      makeStat(formatNumber(inst.outgoingWeight), "Outgoing"),
-      makeStat(formatNumber(inst.incomingWeight), "Incoming"),
-    ].join("");
-
-    infoPanelMembersWrap.hidden = true;
-    selectedInstitutionId = inst.id;
-  }
-
-  infoPanel.hidden = false;
+    infoPanel.hidden = false;
 }
 
 function hideInfoPanel() {
-  infoPanel.hidden = true;
-  selectedInstitutionId = null;
+    infoPanel.hidden = true;
+    selectedInstitutionId = null;
 }
 
 infoPanelClose.addEventListener("click", hideInfoPanel);
@@ -1084,19 +1186,19 @@ infoPanelClose.addEventListener("click", hideInfoPanel);
 const clickHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
 clickHandler.setInputAction((click) => {
-  const picked = viewer.scene.pick(click.position);
+    const picked = viewer.scene.pick(click.position);
 
-  if (Cesium.defined(picked) && picked.id && picked.id.properties) {
-    const type = picked.id.properties.type?.getValue?.();
+    if (Cesium.defined(picked) && picked.id && picked.id.properties) {
+        const type = picked.id.properties.type?.getValue?.();
 
-    if (type === "superpoint") {
-      const superpoint = currentSuperpointsById.get(picked.id.id);
-      if (superpoint) showInfoForSuperpoint(superpoint);
-      return;
+        if (type === "superpoint") {
+            const superpoint = currentSuperpointsById.get(picked.id.id);
+            if (superpoint) showInfoForSuperpoint(superpoint);
+            return;
+        }
+
+        return;
     }
 
-    return;
-  }
-
-  hideInfoPanel();
+    hideInfoPanel();
 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
