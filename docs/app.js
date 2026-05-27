@@ -363,16 +363,16 @@ function renderLeaderboardList(element, rows, year, mode) {
 function updateLeaderboards(year) {
     renderLeaderboardList(
         topProducersList,
-        topSourcesByDataset[currentDataset] ?? [],
+        topTargetsByDataset[currentDataset] ?? [],
         year,
-        "source"
+        "target"
     );
 
     renderLeaderboardList(
         topConsumersList,
-        topTargetsByDataset[currentDataset] ?? [],
+        topSourcesByDataset[currentDataset] ?? [],
         year,
-        "target"
+        "source"
     );
 }
 
