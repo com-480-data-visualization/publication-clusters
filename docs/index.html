@@ -491,6 +491,13 @@
         line-height: 1.4;
       }
 
+      .info-tip {
+        margin-left: 4px;
+        color: var(--text-soft);
+        cursor: help;
+        font-weight: 400;
+      }
+
       .info-stats-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -567,8 +574,14 @@
               <label for="yearSlider">Publication year</label>
               <span id="yearValue">—</span>
             </div>
-            <input type="range" id="yearSlider" />
+            <input type="range" id="yearSlider" list="yearTicks" />
+            <datalist id="yearTicks"></datalist>
           </div>
+
+          <button id="playButton" class="reset-camera-button" type="button">
+              <span class="reset-camera-icon" aria-hidden="true">▶</span>
+              <span class="play-label">Play</span>
+          </button>
 
           <button
             id="resetCameraButton"
@@ -607,14 +620,20 @@
           aria-label="Top citation producers and consumers"
         >
           <div class="leaderboard">
-            <div class="section-label">Top producers</div>
+            <div class="section-label">
+              Top producers
+              <span class="info-tip" title="Institutions whose papers cite others most often in this year">ⓘ</span>
+            </div>
             <ol id="topProducersList" class="leaderboard-list">
               <li>Loading…</li>
             </ol>
           </div>
 
           <div class="leaderboard">
-            <div class="section-label">Top consumers</div>
+            <div class="section-label">
+              Top consumers
+              <span class="info-tip" title="Institutions most cited by other papers in this year">ⓘ</span>
+            </div>
             <ol id="topConsumersList" class="leaderboard-list">
               <li>Loading…</li>
             </ol>
@@ -655,7 +674,7 @@
             id="infoPanelClose"
             aria-label="Close details"
           >
-            x
+            X
           </button>
         </header>
 

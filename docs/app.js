@@ -25,7 +25,7 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
 });
 
 viewer.scene.globe.depthTestAgainstTerrain = true;
-viewer.scene.globe.enableLighting = true;
+viewer.scene.globe.enableLighting = false;
 viewer.scene.skyAtmosphere.show = true;
 viewer.scene.fog.enabled = true;
 viewer.scene.highDynamicRange = true;
@@ -905,6 +905,17 @@ function updateSliderRange() {
     yearSlider.step = 1;
     yearSlider.value = minYear;
     yearValue.textContent = minYear;
+
+    const datalist = document.getElementById("yearTicks");
+    datalist.innerHTML = "";
+    for (let y = minYear; y <= maxYear; y++) {
+        if (y === minYear || y === maxYear || y % 5 === 0) {
+            const opt = document.createElement("option");
+            opt.value = y;
+            opt.label = String(y);
+            datalist.appendChild(opt);
+        }
+    }
 }
 
 function showYear(year, options = {}) {
@@ -934,15 +945,18 @@ yearSlider.addEventListener("input", function () {
 });
 
 datasetSelect.addEventListener("change", function () {
+    const previousYear = Number(yearSlider.value);
     currentDataset = this.value;
     lastRefreshKey = null;
-
     updateSliderRange();
 
-    showYear(Number(yearSlider.value), {
-        zoom: true,
-        force: true,
-    });
+    const min = Number(yearSlider.min);
+    const max = Number(yearSlider.max);
+    if (Number.isFinite(previousYear) && previousYear >= min && previousYear <= max) {
+        yearSlider.value = previousYear;
+        yearValue.textContent = previousYear;
+    }
+    showYear(Number(yearSlider.value), { zoom: true, force: true });
 });
 
 resetCameraButton.addEventListener("click", resetCamera);
@@ -953,6 +967,27 @@ viewer.camera.moveEnd.addEventListener(
         showYear(Number(yearSlider.value));
     }, 120)
 );
+
+const playButton = document.getElementById("playButton");
+let playInterval = null;
+
+playButton.addEventListener("click", () => {
+    if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+        playButton.querySelector(".reset-camera-icon").textContent = "▶";
+        playButton.querySelector(".play-label").textContent = "Play";
+        return;
+    }
+    playInterval = setInterval(() => {
+        const cur = Number(yearSlider.value);
+        const max = Number(yearSlider.max);
+        yearSlider.value = cur >= max ? Number(yearSlider.min) : cur + 1;
+        yearSlider.dispatchEvent(new Event("input"));
+    }, 900);
+    playButton.querySelector(".reset-camera-icon").textContent = "⏸";
+    playButton.querySelector(".play-label").textContent = "Pause";
+});
 
 //
 // Click-to-inspect node details
