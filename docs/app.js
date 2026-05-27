@@ -85,6 +85,18 @@ const statusMessage = document.getElementById("statusMessage");
 const topProducersList = document.getElementById("topProducersList");
 const topConsumersList = document.getElementById("topConsumersList");
 
+let currentSuperpointsById = new Map();
+let selectedInstitutionId = null;
+
+const infoPanel = document.getElementById("infoPanel");
+const infoPanelClose = document.getElementById("infoPanelClose");
+const infoPanelType = document.getElementById("infoPanelType");
+const infoPanelTitle = document.getElementById("infoPanelTitle");
+const infoPanelSubtitle = document.getElementById("infoPanelSubtitle");
+const infoPanelStats = document.getElementById("infoPanelStats");
+const infoPanelMembersWrap = document.getElementById("infoPanelMembersWrap");
+const infoPanelMembers = document.getElementById("infoPanelMembers");
+
 //
 // Manifest Helpers
 //
@@ -561,7 +573,7 @@ function computeSuperpoints(nodes, cellSizeDeg) {
             totalWeight,
             incomingWeight,
             outgoingWeight,
-            members: members.map((member) => member.id),
+            members,
         };
 
         superpoints.push(superpoint);
@@ -823,6 +835,21 @@ function refreshGraph(year, options = {}) {
     const { superpoints, nodeToSuperpoint } = computeSuperpoints(graph.nodes, cellSizeDeg);
     const superEdges = aggregateEdges(graph.edges, nodeToSuperpoint, DIRECTED_EDGES);
 
+    currentSuperpointsById = new Map(superpoints.map((sp) => [sp.id, sp]));
+
+    if (selectedInstitutionId) {
+    const containing = superpoints.find((sp) =>
+        sp.members.some((m) => m.id === selectedInstitutionId)
+    );
+    if (containing) {
+        showInfoForSuperpoint(containing, { preserveInstitutionId: true });
+    } else {
+        hideInfoPanel();
+    }
+    } else if (!infoPanel.hidden) {
+        hideInfoPanel();
+    }
+
     renderSuperEdges(superpoints, superEdges);
     renderSuperpoints(superpoints);
 
@@ -926,3 +953,115 @@ viewer.camera.moveEnd.addEventListener(
         showYear(Number(yearSlider.value));
     }, 120)
 );
+
+//
+// Click-to-inspect node details
+//
+
+function makeStat(value, label) {
+  return `
+    <div class="stat">
+      <span class="stat-value">${value}</span>
+      <span class="stat-label">${label}</span>
+    </div>
+  `;
+}
+
+function showInfoForSuperpoint(superpoint, options = {}) {
+  const { preserveInstitutionId = false } = options;
+  const isCluster = superpoint.count > 1;
+
+  if (isCluster) {
+    infoPanelType.textContent = `Cluster · ${superpoint.count} institutions`;
+    infoPanelTitle.textContent = `${superpoint.count} institutions`;
+
+    const countries = [
+      ...new Set(superpoint.members.map((m) => m.country).filter(Boolean)),
+    ];
+    const countryLabel =
+      countries.length === 0
+        ? ""
+        : countries.length === 1
+          ? countries[0]
+          : `${countries.length} countries`;
+
+    infoPanelSubtitle.textContent =
+      `${countryLabel}${countryLabel ? " · " : ""}zoom in to break the cluster apart`;
+
+    infoPanelStats.innerHTML = [
+      makeStat(formatNumber(superpoint.totalWeight), "Total citations"),
+      makeStat(formatNumber(superpoint.outgoingWeight), "Outgoing"),
+      makeStat(formatNumber(superpoint.incomingWeight), "Incoming"),
+      makeStat(formatNumber(superpoint.count), "Institutions"),
+    ].join("");
+
+    const sorted = [...superpoint.members].sort(
+      (a, b) => (b.totalWeight ?? 0) - (a.totalWeight ?? 0)
+    );
+
+    infoPanelMembers.innerHTML = sorted
+      .map(
+        (m) => `
+          <li>
+            <strong>${m.name}</strong>
+            <span>
+              ${m.country ? m.country + " · " : ""}
+              ${formatNumber(m.totalWeight)} citations
+              (${formatNumber(m.outgoingWeight)} out,
+               ${formatNumber(m.incomingWeight)} in)
+            </span>
+          </li>
+        `
+      )
+      .join("");
+
+    infoPanelMembersWrap.hidden = false;
+
+    if (!preserveInstitutionId) {
+      selectedInstitutionId = null;
+    }
+  } else {
+    const inst = superpoint.members[0];
+    infoPanelType.textContent = "Institution";
+    infoPanelTitle.textContent = inst.name;
+    infoPanelSubtitle.textContent = inst.country || "";
+
+    infoPanelStats.innerHTML = [
+      makeStat(formatNumber(inst.totalWeight), "Total citations"),
+      makeStat(formatNumber(inst.outgoingWeight), "Outgoing"),
+      makeStat(formatNumber(inst.incomingWeight), "Incoming"),
+    ].join("");
+
+    infoPanelMembersWrap.hidden = true;
+    selectedInstitutionId = inst.id;
+  }
+
+  infoPanel.hidden = false;
+}
+
+function hideInfoPanel() {
+  infoPanel.hidden = true;
+  selectedInstitutionId = null;
+}
+
+infoPanelClose.addEventListener("click", hideInfoPanel);
+
+const clickHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+clickHandler.setInputAction((click) => {
+  const picked = viewer.scene.pick(click.position);
+
+  if (Cesium.defined(picked) && picked.id && picked.id.properties) {
+    const type = picked.id.properties.type?.getValue?.();
+
+    if (type === "superpoint") {
+      const superpoint = currentSuperpointsById.get(picked.id.id);
+      if (superpoint) showInfoForSuperpoint(superpoint);
+      return;
+    }
+
+    return;
+  }
+
+  hideInfoPanel();
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
