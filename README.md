@@ -13,11 +13,11 @@
 
 ## What is this?
 
-Every time a researcher publishes a paper, they cite the work they built on. Those citations are more than footnotes — they are a map of how ideas travel across the world.
+Every time a researcher publishes a paper, they cite the work they built on. Those citations are more than footnotes, they are a map of how ideas travel across the world.
 
 **Publication Clusters** makes that map visible. We turn twenty years of citation data into a live interactive 3D globe: each dot is a research institution, each arc is a directed citation link, and a year slider lets you watch the geography of scientific influence shift from 2005 to 2025 in real time. Hit play and watch two decades of knowledge flow animate automatically. Click any institution to explore its citation history and ranking. A live leaderboard tracks the top knowledge producers and consumers for the selected year and field.
 
-We cover five research domains, over 25,000 institutions worldwide, and more than 3 million citation links — all navigable in real time with no backend or server.
+We cover five research domains, over 25,000 institutions worldwide, and more than 3 million citation links, all navigable in real time with no backend or server.
 
 ---
 
@@ -25,7 +25,7 @@ We cover five research domains, over 25,000 institutions worldwide, and more tha
 
 | Milestone | Document |
 | --------- | -------- |
-| Milestone 1 | [milestone1.md](Milestone1.md) |
+| Milestone 1 | [milestone1.md](milestone1.md) |
 | Milestone 2 | [milestone2.pdf](milestone2.pdf) |
 | Milestone 3 — Process Book | [process_book.pdf](process_book.pdf) |
 
@@ -133,6 +133,6 @@ Nodes are coloured by whether they are individual institutions (pink) or cluster
 
 Two of our team members are also working on a project for the Computational Social Media course that involves the academic citation world. We want to be fully transparent about the boundary between these two projects.
 
-The two projects share no code and no ideas. The datasets are entirely different. The other project studies social network attributes of the graph in the Global South versus the Global North — it is a comparison of network-level properties (centrality, community structure, connectivity) between geographic groups of the graph. Our project builds institution-level geographic citation networks over time across specific research fields to visualize how knowledge flows between labs across the planet.
+The two projects share no code and no ideas. The datasets are entirely different. The other project studies social network attributes of the graph in the Global South versus the Global North, it is a comparison of network-level properties (centrality, community structure, connectivity) between geographic groups of the graph. Our project builds institution-level geographic citation networks over time across specific research fields to visualize how knowledge flows between labs across the planet.
 
 The only thing the two projects have in common is a general interest in the academic citation world. Everything else, the research questions, the datasets, the methods, the visualizations, and the conclusions, is completely independent.
