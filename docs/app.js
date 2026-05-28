@@ -679,6 +679,23 @@ function aggregateEdges(rawEdges, nodeToSuperpoint, directed = DIRECTED_EDGES) {
 // Styling
 // --------------------------------------------------
 
+// Edge styling / decluttering knobs
+const MIN_EDGE_WEIGHT = 2;     // Hide edges weaker than this (set 0 to disable)
+const MAX_EDGES_DRAWN  = 400;  // Only draw the N strongest (set Infinity to disable)
+
+const EDGE_WIDTH_MIN = 1.0;    // Thinnest line (px)
+const EDGE_WIDTH_MAX = 50.0;   // Thickest line (px)
+
+const EDGE_ALPHA_MIN = 0.06;   // Faint small flows
+const EDGE_ALPHA_MAX = 0.95;   // Solid big flows
+
+// Magnitude color ramp (small -> large)
+const EDGE_RAMP = [
+    { t: 0.0, color: "#1e3a8a" },
+    { t: 0.5, color: "#38bdf8" },
+    { t: 1.0, color: "#e0f2fe" },
+];
+
 function getSuperpointPixelSize(superpoint) {
     const volume = superpoint.totalWeight ?? 0;
     const clusterBoost = Math.sqrt(superpoint.count ?? 1) * 2;
@@ -686,9 +703,9 @@ function getSuperpointPixelSize(superpoint) {
     return Math.min(60, 8 + Math.sqrt(volume) * 1.25 + clusterBoost);
 }
 
-function getEdgeWidth(weight) {
-    if (weight <= 1) return 2.2;
-    return Math.min(16, 2.2 + Math.sqrt(weight) * 1.55);
+// Linear in t (t is already log-normalized to the frame's range)
+function getEdgeWidth(t) {
+    return EDGE_WIDTH_MIN + t * (EDGE_WIDTH_MAX - EDGE_WIDTH_MIN);
 }
 
 function getLabelFont(count) {
@@ -708,9 +725,40 @@ function getNodeOutlineColor() {
     return Cesium.Color.fromCssColorString("#f8fafc");
 }
 
-function getEdgeColor(weight) {
-    const alpha = Math.min(0.82, 0.38 + Math.sqrt(weight) * 0.06);
-    return Cesium.Color.fromCssColorString("#38bdf8").withAlpha(alpha);
+// Map a weight onto 0..1 within the frame's range, log-scaled
+// so 10 vs 1000 spread out instead of both saturating.
+function normalizeWeight(weight, minW, maxW) {
+    if (!(maxW > minW)) return 1;
+    const lo = Math.log(minW + 1);
+    const hi = Math.log(maxW + 1);
+    const t = (Math.log((weight ?? 0) + 1) - lo) / (hi - lo);
+    return Math.min(1, Math.max(0, t));
+}
+
+// Interpolate the EDGE_RAMP at position t
+function sampleEdgeRamp(t) {
+    const stops = EDGE_RAMP;
+    for (let i = 1; i < stops.length; i++) {
+        if (t <= stops[i].t) {
+            const a = stops[i - 1];
+            const b = stops[i];
+            const localT = (t - a.t) / ((b.t - a.t) || 1);
+            return Cesium.Color.lerp(
+                Cesium.Color.fromCssColorString(a.color),
+                Cesium.Color.fromCssColorString(b.color),
+                localT,
+                new Cesium.Color()
+            );
+        }
+    }
+    return Cesium.Color.fromCssColorString(stops[stops.length - 1].color);
+}
+
+// Color from ramp, alpha rising with magnitude
+function getEdgeColor(t) {
+    const base = sampleEdgeRamp(t);
+    const alpha = EDGE_ALPHA_MIN + t * (EDGE_ALPHA_MAX - EDGE_ALPHA_MIN);
+    return base.withAlpha(alpha);
 }
 
 // --------------------------------------------------
@@ -797,13 +845,40 @@ function renderSuperpoints(superpoints) {
 function renderSuperEdges(superpoints, superEdges) {
     edgeDataSource.entities.removeAll();
 
-    const superpointById = new Map(superpoints.map((superpoint) => [superpoint.id, superpoint]));
+    const superpointById = new Map(
+        superpoints.map((superpoint) => [superpoint.id, superpoint])
+    );
 
-    for (const edge of superEdges) {
+    // Drop the weakest edges
+    let edges = superEdges.filter((e) => (e.weight ?? 0) >= MIN_EDGE_WEIGHT);
+
+    // Keep only the strongest N (sorted strongest-first)
+    edges.sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0));
+    if (edges.length > MAX_EDGES_DRAWN) {
+        edges = edges.slice(0, MAX_EDGES_DRAWN);
+    }
+
+    if (!edges.length) return;
+
+    // Per-frame weight range for normalization
+    let minW = Infinity;
+    let maxW = -Infinity;
+    for (const e of edges) {
+        const w = e.weight ?? 0;
+        if (w < minW) minW = w;
+        if (w > maxW) maxW = w;
+    }
+
+    // Draw strongest LAST so big flows sit on top of the faint mesh.
+    for (let i = edges.length - 1; i >= 0; i--) {
+        const edge = edges[i];
+
         const source = superpointById.get(edge.sourceSuper);
         const target = superpointById.get(edge.targetSuper);
 
         if (!source || !target) continue;
+
+        const t = normalizeWeight(edge.weight ?? 0, minW, maxW);
 
         edgeDataSource.entities.add({
             polyline: {
@@ -811,9 +886,9 @@ function renderSuperEdges(superpoints, superEdges) {
                     makePosition(source.lon, source.lat, 20_000),
                     makePosition(target.lon, target.lat, 20_000),
                 ],
-                width: getEdgeWidth(edge.weight),
+                width: getEdgeWidth(t),
                 material: new Cesium.PolylineArrowMaterialProperty(
-                    getEdgeColor(edge.weight)
+                    getEdgeColor(t)
                 ),
                 clampToGround: false,
                 arcType: Cesium.ArcType.GEODESIC,
