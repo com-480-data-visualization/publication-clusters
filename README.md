@@ -1,84 +1,138 @@
-# publication-clusters
-| Student's name | SCIPER |
-| -------------- | ------ |
-| Melika Honarmand | 357204 |
-| Aude Maier | 300671 |
-| Edgar Desnos | 388960 |
-| Alexandre Carel | 310350 |
+# Publication Clusters
 
+| Student | SCIPER | Contribution |
+| ------- | ------ | ------------ |
+| Melika Honarmand | 357204 | 25% |
+| Aude Maier | 300671 | 25% |
+| Edgar Desnos | 388960 | 25% |
+| Alexandre Carel | 310350 | 25% |
 
-## Dataset
-
-The primary dataset used in this project consists of scientific publications and their associated metadata retrieved from the OpenAlex API. It comprises over 480 million records and includes numerous features such as publication date, country of origin, authorship information, and citation links to other papers.
-
-In terms of quality, the dataset is generally high, as it is derived from curated scholarly sources. While minor inconsistencies or missing values may exist, it is overall considered reliable and well-suited for the objectives of this project.
-
-Several preprocessing steps were applied to prepare the data for analysis. These include data filtering based on topic and publication year, feature selection to retain only relevant variables, sampling to limit dataset size, and normalization through fractional weighting of relationships. Additionally, basic data cleaning was performed to handle missing or incomplete metadata. These steps ensure improved computational performance, consistency, and compatibility with subsequent modeling approaches.
-
-A complementary dataset from the OpenStreetMap API is also incorporated. This dataset contains billions of geospatial entries, including coordinates, country information, and feature classifications. It is used to enrich the primary dataset through data augmentation, enabling more comprehensive spatial analysis.
-
-## Problematic
-
-This project focuses on visualizing the evolution of global academic influence by mapping citation networks between universities on a geospatial and temporal scale. While static rankings provide snapshots of institutional prestige, they fail to capture the **dynamic flow of knowledge** and how institutional interconnectedness shifts over decades. This visualization treats citations as directed geographic vectors that change in density and direction over time.
-
-### Project Objectives
-The visualization is designed to address three primary questions regarding the global research landscape:
-1. **Temporal Connectivity:** Is the global academic network becoming more integrated over the years, or are we seeing the formation of isolated regional clusters?
-2. **Shifting Hubs:** Which countries and cities have transitioned from "knowledge consumers" to "major exporters" of research between the two decades?
-3. **Citation Dyads:** Which specific pairs (university-to-university or country-to-country) have developed the strongest reciprocal links, and how do these alliances fluctuate?
-
-### Motivation
-The primary motivation is to move beyond static data to identify the **gravitational shift** of scientific impact. By implementing a longitudinal analysis, the project tracks the rise of new academic hubs (such as in East Asia or the Global South) relative to the historical dominance of North American and European institutions. It highlights:
-1.  **Network Density:** The growth or contraction of citation lines across borders from year to year.
-2.  **Leading/Lagging Regions:** A comparative look at which nations are the most (and least) cited globally and how those rankings change over time.
-3.  **Institutional Loops:** Identifying "citation archipelagos", regions or university groups that primarily cite within their own network.
-
-### Target Audience
-This tool is intended for **bibliometric researchers, university strategists, and policy makers** who require a macro-level view of international research trends to inform funding, collaboration strategies, and geopolitical analysis of scientific output.
-
-
-## Exploratory Data Analysis & Pre-processing
-
-### The Approach
-Our analysis uses the OpenAlex database to build a geographic network of research institutions for specific years. In these networks, nodes represent the universities or labs, and edges represent a citation link between them. To keep the data focused and reduce map clutter, we only draw edges between the institutions of the first authors of the papers. This allows us to map the primary "Lead Lab" responsible for the research. 
-
-Our pre-processing pipeline followed three main steps:
-
-1. **Topic Selection**: We fetch a fixed number of the top-cited papers per year for a specific topic. This ensures we are looking at the most influential work in the field and capturing the "core" of the scientific conversation.
-2. **Coordinate Lookup**: Because many database entries are missing GPS data, we used OpenStreetMap (Nominatim) to manually map university names to their exact Latitude and Longitude. This step was crucial for ensuring every "Lead Lab" was accurately placed on the world map.
-3. **Network Construction**: We build a "closed" graph for every year. This means we only visualize connections between the institutions that appear within our specific search results. This approach highlights the internal density of a field and shows how it becomes more or less "self-contained" over time.
+**Live website:** https://com-480-data-visualization.github.io/publication-clusters/
 
 ---
 
-### Domain Evolution: Case Studies
+## What is this?
 
-For this exploratory analysis, we selected two domains that demonstrate fundamentally different geographic behaviors: **Solar Cell Manufacturing** and **High-Energy Physics (LHC)**.
+Every time a researcher publishes a paper, they cite the work they built on. Those citations are more than footnotes — they are a map of how ideas travel across the world.
 
-* **Solar Cells**: Shows a massive geographic shift. Research started in the US, Europe and Australia but became very China-centered in the last decade as the manufacturing industry migrated.
-![Solar Cells Evolution](figures/geospatial_evolution_SolarCells_2005_2025.png)
+**Publication Clusters** makes that map visible. We turn twenty years of citation data into a live interactive 3D globe: each dot is a research institution, each arc is a directed citation link, and a year slider lets you watch the geography of scientific influence shift from 2005 to 2025 in real time. Hit play and watch two decades of knowledge flow animate automatically. Click any institution to explore its citation history and ranking. A live leaderboard tracks the top knowledge producers and consumers for the selected year and field.
 
-* **LHC**: Shows a fixed "anchor" model. Because the physical collider is in Switzerland, the network always contains a cluster in Europe, whereas the other hubs vary over time.
-![LHC Evolution](figures/geospatial_evolution_LHC_2005_2014.png)
+We cover five research domains, over 25,000 institutions worldwide, and more than 3 million citation links — all navigable in real time with no backend or server.
 
 ---
 
-The geographic networks of research institutions and the above figures were generated using `main.py`.
+## Milestones
 
-## Related Work
+| Milestone | Document |
+| --------- | -------- |
+| Milestone 1 | [milestone1.md](Milestone1.md) |
+| Milestone 2 | [milestone2.pdf](milestone2.pdf) |
+| Milestone 3 — Process Book | [process_book.pdf](process_book.pdf) |
 
-There has been prior work on visualizing scientific publications and citation networks. [Haunschild and Bornmann (2024)](https://doi.org/10.1371/journal.pone.0308041) used OpenAlex to build global overlay maps of science  constructed with [VOSviewer](https://www.vosviewer.com/), a widely used bibliometric network visualization tool. The [Local Citation Network app](https://localcitationnetwork.github.io/) similarly lets users explore citation graphs from OpenAlex. However, these tools focus on thematic positioning or citation graph exploration rather than geographic citation flows.
+---
 
-[Pan, Kaski, and Fortunato (2012)](https://www.nature.com/articles/srep00902) studied citation and collaboration networks between cities and countries showing that citation flows follow gravity-like patterns where geographical closeness affects how often they cite each other. This is very relevant to our project but their few visualizations are static and don't support interactivity or filtering.
+## Technical Setup
 
-Several tools also map citations geographically. [Citation Map](https://citationmap.com/) is an open-source tool built on OpenAlex that visualizes where a researcher's citations come from on a world map. [CitationMap](https://github.com/ChenLiu-1996/CitationMap) does something similar using Google Scholar data. While useful, these do not combine topic-level filtering with a time-based animated map showing directional flows and geographic clustering.
+### Requirements
 
-Our primary inspiration comes from flow visualizations outside academia. [The circular migration flow visualization](http://www.global-migration.info/) by Sander, Abel, and Bauer and [peoplemovin](https://peoplemov.in/) both use interactive diagrams to show global human migration patterns. For geographic map-based flows specifically, similar to what we would like to achieve, [FlowmapBlue](https://www.flowmap.blue/) renders origin-destination data as animated arcs overlaid on a real-world map. We apply this same idea of directional flows on a real map to the spread of scientific ideas rather than people.
+The main dependencies are `requests`, `pandas`, and `geopy` for the data pipeline. The website itself has no Python dependencies — it runs entirely in the browser.
 
+### Running the data pipeline
 
+The pipeline fetches data from OpenAlex, geocodes institutions, and produces the CSV files served by the website.
+
+```bash
+python main.py
+```
+
+This will run the full pipeline for all five domains and write output files to `docs/data/`. The pipeline follows five stages:
+
+1. **OpenAlex API** — fetches the top 1,000 most-cited papers per year per domain (2005–2025)
+2. **Institution extraction** — identifies the lead author's institution from each paper
+3. **Geocoding** — maps each institution to lat/lng using OpenAlex first, then OpenStreetMap (Nominatim) as fallback
+4. **Graph construction** — builds a directed weighted citation graph between institution pairs
+5. **CSV export** — writes `geo_dict_*.csv` and `institution_network_evolution_*.csv` to `docs/data/`
+
+### Running the website locally
+
+The website is a fully static site served from the `docs/` folder. No build step required.
+
+```bash
+cd docs
+python -m http.server 8000
+```
+
+Then open http://localhost:8000 in your browser.
+
+---
+
+## Repository Structure
+
+```
+.
+├── docs/                        # GitHub Pages — the live website
+│   ├── index.html               # Main page
+│   ├── app.js                   # All visualization logic (CesiumJS)
+│   ├── manifest.json            # Dataset registry
+│   └── data/                   # Pre-computed CSV files
+│       ├── geo_dict_*.csv                       # Institution coordinates
+│       ├── institution_network_evolution_*.csv   # Citation edges per year
+│       ├── top_sources_by_year_*.csv             # Top knowledge consumers
+│       └── top_targets_by_year_*.csv             # Top knowledge producers
+├── data/                        # Local data and analysis results
+│   └── results/                 # Q1, Q2, Q3 analysis outputs
+├── figures/                     # Generated plots
+├── build_institution_network.py # Data pipeline implementation
+├── main.py                      # Pipeline entry point
+├── q1_integration_analysis.ipynb
+├── reciprocal_edges_results.ipynb
+├── score_deltas_results.ipynb
+└── requirements.txt
+```
+
+---
+
+## Usage
+
+Once the website is open, the interface works as follows:
+
+- **Topic selector** — choose one of the five research domains from the dropdown
+- **Year slider** — drag to select a year between 2005 and 2025
+- **Play button** — animates through all years automatically
+- **Click a node** — opens a side panel with the institution name, country, and citation breakdown (total, outgoing, incoming). For clusters, lists all member institutions sorted by citation weight
+- **Leaderboard** — always shows the top 5 knowledge producers and top 5 consumers for the current year and domain
+- **Reset camera** — flies the camera back to the data's bounding region
+
+Nodes are coloured by whether they are individual institutions (pink) or clusters of nearby institutions (yellow). Arc width and opacity encode citation strength. Arrow heads show the direction of citation flow.
+
+---
+
+## Research Domains
+
+| Domain | Topic ID |
+| ------ | -------- |
+| Solar Cells | T10411 |
+| LHC Physics | T10237 |
+| Complex Network Analysis | T10064 |
+| Gravitational Waves | T10463 |
+| Magnetic Thin Films | T10049 |
+
+---
+
+## Key Findings
+
+**Q1 — Integration over time:** The number of countries participating in citation networks grew from around 65 to over 110 between 2005 and 2025. Over 80% of citation links cross national borders throughout the entire period. The global academic network is integrating, not fragmenting.
+
+**Q2 — Shifting hubs:** China's research institutions shifted from net importers to major exporters across multiple fields. French institutions (CNRS, INRIA, CEA) consolidated as dominant domestic producers. Several historically prominent institutions in Europe and Japan lost ground relative to rising Asian hubs.
+
+**Q3 — Strongest reciprocal bonds:** The most enduring bond is between Caltech (US) and the Max Planck Institute for Gravitational Physics (DE), present in all 21 years of data with a peak weight of 285 in 2021 following the LIGO detection. In Magnetic Thin Films, CNRS and CEA have appeared together for 19 consecutive years. In Complex Network Analysis, dominant pairs shifted from US-Israeli academic ties to Chinese domestic clusters by 2018.
+
+---
 
 ## Remark
-Two of our team members are also working on a project for the “Computational Social Media” course that uses OpenAlex to study paper citations. While both projects have a similar topic, they have very different approaches, objectives, and actual datasets.
 
-For this course, we are building networks of **research institutions** over the years in several domains, focusing on how connectivity changes over time in specific fields. We want to see how scientific bubbles grow, connect and shift year-by-year.
+Two of our team members are also working on a project for the Computational Social Media course that involves the academic citation world. We want to be fully transparent about the boundary between these two projects.
 
-In contrast, the other project builds a single, up-to-date network of **researchers** to perform social network analysis, such as detecting communities, measuring network connectivity, and evaluating node centrality.
+The two projects share no code and no ideas. The datasets are entirely different. The other project studies social network attributes of the graph in the Global South versus the Global North — it is a comparison of network-level properties (centrality, community structure, connectivity) between geographic groups of the graph. Our project builds institution-level geographic citation networks over time across specific research fields to visualize how knowledge flows between labs across the planet.
+
+The only thing the two projects have in common is a general interest in the academic citation world. Everything else, the research questions, the datasets, the methods, the visualizations, and the conclusions, is completely independent.
