@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Publication Clusters</title>
 
     <link
@@ -11,6 +12,25 @@
     />
 
     <style>
+      :root {
+        --panel-bg: rgba(15, 23, 42, 0.78);
+        --panel-bg-strong: rgba(15, 23, 42, 0.92);
+        --panel-border: rgba(255, 255, 255, 0.16);
+        --text-main: #f8fafc;
+        --text-muted: #cbd5e1;
+        --text-soft: #94a3b8;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.18);
+        --node-single: #fb7185;
+        --node-cluster: #fbbf24;
+        --edge-color: #38bdf8;
+        --danger: #f87171;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       html,
       body,
       #cesiumContainer {
@@ -21,47 +41,860 @@
         overflow: hidden;
       }
 
+      body {
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #020617;
+      }
+
+      #cesiumContainer {
+        position: absolute;
+        inset: 0;
+      }
+
+      .app-shell {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      .intro-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 300;
+        display: grid;
+        place-items: center;
+        padding: 32px;
+        color: var(--text-main);
+        background:
+          radial-gradient(circle at 72% 42%, rgba(56, 189, 248, 0.18), transparent 34%),
+          radial-gradient(circle at 22% 18%, rgba(251, 191, 36, 0.12), transparent 28%),
+          linear-gradient(90deg, rgba(2, 6, 23, 0.94), rgba(2, 6, 23, 0.62));
+        backdrop-filter: blur(4px);
+        transition:
+          opacity 420ms ease,
+          visibility 420ms ease;
+      }
+
+      .intro-overlay.is-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .intro-card {
+        width: min(760px, 100%);
+        padding: clamp(24px, 5vw, 48px);
+        border: 1px solid var(--panel-border);
+        border-radius: 30px;
+        background: rgba(15, 23, 42, 0.82);
+        box-shadow:
+          0 30px 100px rgba(0, 0, 0, 0.48),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(22px);
+      }
+
+      .intro-title {
+        max-width: 680px;
+        margin: 0;
+        font-size: clamp(36px, 7vw, 72px);
+        line-height: 0.95;
+        font-weight: 900;
+        letter-spacing: -0.07em;
+      }
+
+      .intro-lead {
+        max-width: 620px;
+        margin: 22px 0 0;
+        color: var(--text-muted);
+        font-size: clamp(16px, 2vw, 20px);
+        line-height: 1.55;
+      }
+
+      .intro-facts {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin: 28px 0;
+      }
+
+      .intro-fact {
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.38);
+      }
+
+      .intro-fact strong {
+        display: block;
+        color: #e0f2fe;
+        font-size: clamp(22px, 3vw, 34px);
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+      }
+
+      .intro-fact span {
+        display: block;
+        margin-top: 8px;
+        color: var(--text-soft);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      .intro-copy {
+        max-width: 620px;
+        margin: 0 0 26px;
+        color: var(--text-muted);
+        font-size: 15px;
+        line-height: 1.55;
+      }
+
+      .intro-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 15px 20px;
+        color: #020617;
+        background: linear-gradient(135deg, #e0f2fe, #38bdf8);
+        border: 0;
+        border-radius: 999px;
+        box-shadow:
+          0 18px 46px rgba(56, 189, 248, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        font: inherit;
+        font-size: 15px;
+        font-weight: 900;
+        cursor: pointer;
+        transition:
+          transform 140ms ease,
+          box-shadow 140ms ease;
+      }
+
+      .intro-button:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 24px 60px rgba(56, 189, 248, 0.38),
+          inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      }
+
+      .intro-button:active {
+        transform: translateY(0);
+      }
+
+      .intro-button:focus-visible {
+        outline: none;
+        box-shadow:
+          0 0 0 4px rgba(56, 189, 248, 0.26),
+          0 24px 60px rgba(56, 189, 248, 0.38);
+      }
+
       #toolbar {
         position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 100;
-        background: rgba(42, 42, 42, 0.85);
-        color: white;
-        padding: 12px;
-        border-radius: 8px;
-        font-family: sans-serif;
+        top: 20px;
+        left: 20px;
+        width: min(340px, calc(100vw - 40px));
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        padding: 18px;
+        color: var(--text-main);
+        background: var(--panel-bg);
+        border: 1px solid var(--panel-border);
+        border-radius: 22px;
+        box-shadow:
+          0 24px 80px rgba(0, 0, 0, 0.42),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+        pointer-events: auto;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 5px 9px;
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        border-radius: 999px;
+        color: #bae6fd;
+        background: rgba(8, 47, 73, 0.42);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
+      }
+
+      .toolbar-title {
+        margin: 0;
+        font-size: 21px;
+        line-height: 1.15;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .toolbar-subtitle {
+        margin: 8px 0 18px;
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .control-card {
+        display: grid;
+        gap: 14px;
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.34);
+      }
+
+      .control-group {
+        display: grid;
+        gap: 7px;
+      }
+
+      .control-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      label,
+      .section-label {
+        color: var(--text-soft);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      select {
+        width: 100%;
+        appearance: none;
+        padding: 11px 40px 11px 12px;
+        color: var(--text-main);
+        background:
+          linear-gradient(45deg, transparent 50%, var(--text-muted) 50%)
+            calc(100% - 18px) 50% / 6px 6px no-repeat,
+          linear-gradient(135deg, var(--text-muted) 50%, transparent 50%)
+            calc(100% - 13px) 50% / 6px 6px no-repeat,
+          var(--panel-bg-strong);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 13px;
+        outline: none;
+        font: inherit;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18);
       }
 
       #yearSlider {
-        width: 220px;
+        width: 100%;
+        margin: 2px 0 0;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+
+      .reset-camera-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 11px 14px;
+        color: #e0f2fe;
+        background:
+          linear-gradient(
+            135deg,
+            rgba(56, 189, 248, 0.22),
+            rgba(14, 165, 233, 0.08)
+          ),
+          rgba(15, 23, 42, 0.72);
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        border-radius: 14px;
+        box-shadow:
+          0 14px 32px rgba(8, 47, 73, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition:
+          transform 140ms ease,
+          border-color 140ms ease,
+          background 140ms ease,
+          box-shadow 140ms ease;
+      }
+
+      .reset-camera-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(56, 189, 248, 0.55);
+        background:
+          linear-gradient(
+            135deg,
+            rgba(56, 189, 248, 0.3),
+            rgba(14, 165, 233, 0.12)
+          ),
+          rgba(15, 23, 42, 0.82);
+        box-shadow:
+          0 18px 42px rgba(8, 47, 73, 0.36),
+          0 0 0 4px rgba(56, 189, 248, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+
+      .reset-camera-button:active {
+        transform: translateY(0);
+      }
+
+      .reset-camera-button:focus-visible {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow:
+          0 0 0 4px rgba(56, 189, 248, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+
+      .reset-camera-icon {
+        font-size: 15px;
+        line-height: 1;
       }
 
       #yearValue {
-        font-weight: bold;
-        margin-left: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 62px;
+        padding: 5px 10px;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: #e0f2fe;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .stat {
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.58);
+      }
+
+      .stat-value {
+        display: block;
+        color: var(--text-main);
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .stat-label {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-soft);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .legend {
+        display: grid;
+        gap: 9px;
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.28);
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      .legend-dot {
+        width: 11px;
+        height: 11px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .legend-dot.single {
+        background: var(--node-single);
+      }
+
+      .legend-dot.cluster {
+        background: var(--node-cluster);
+      }
+
+      .legend-line {
+        width: 24px;
+        height: 3px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: var(--edge-color);
+        opacity: 0.85;
+      }
+
+      #statusMessage {
+        margin-top: 14px;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      #statusMessage.error {
+        color: var(--danger);
+      }
+
+      .credit-pill {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        max-width: min(420px, calc(100vw - 40px));
+        padding: 10px 12px;
+        color: var(--text-muted);
+        background: rgba(15, 23, 42, 0.62);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        font-size: 12px;
+        backdrop-filter: blur(14px);
+        pointer-events: none;
+      }
+
+      /* Cleaner Cesium default UI */
+      .cesium-viewer-bottom,
+      .cesium-credit-lightbox-overlay,
+      .cesium-credit-lightbox {
+        z-index: 200;
+      }
+
+      @media (max-width: 640px) {
+        #toolbar {
+          top: 12px;
+          left: 12px;
+          width: calc(100vw - 24px);
+          padding: 15px;
+          border-radius: 18px;
+        }
+
+        .toolbar-title {
+          font-size: 19px;
+        }
+
+        .intro-overlay {
+          padding: 16px;
+          place-items: end center;
+        }
+
+        .intro-card {
+          padding: 22px;
+          border-radius: 24px;
+        }
+
+        .intro-facts {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .intro-button {
+          width: 100%;
+        }
+
+        .credit-pill {
+          display: none;
+        }
+      }
+
+      .leaderboards {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .leaderboard {
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.28);
+      }
+
+      .leaderboard-list {
+        display: grid;
+        gap: 7px;
+        margin: 10px 0 0;
+        padding-left: 20px;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      .leaderboard-list li {
+        line-height: 1.35;
+      }
+
+      .leaderboard-list strong {
+        color: var(--text-main);
+      }
+
+      .leaderboard-list span {
+        color: var(--text-soft);
+      }
+
+      .info-panel {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: min(360px, calc(100vw - 40px));
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+        padding: 18px;
+        color: var(--text-main);
+        background: var(--panel-bg);
+        border: 1px solid var(--panel-border);
+        border-radius: 22px;
+        box-shadow:
+          0 24px 80px rgba(0, 0, 0, 0.42),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+        pointer-events: auto;
+      }
+
+      .info-panel[hidden] { display: none; }
+
+      .info-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .info-panel-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        color: var(--text-muted);
+        background: rgba(15, 23, 42, 0.58);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        font: inherit;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        transition: color 140ms ease, border-color 140ms ease;
+      }
+
+      .info-panel-close:hover {
+        color: var(--text-main);
+        border-color: rgba(56, 189, 248, 0.45);
+      }
+
+      .info-panel-title {
+        margin: 12px 0 4px;
+        font-size: 21px;
+        line-height: 1.2;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .info-panel-subtitle {
+        margin: 0 0 14px;
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .info-tip {
+        margin-left: 4px;
+        color: var(--text-soft);
+        cursor: help;
+        font-weight: 400;
+      }
+
+      .info-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .info-members {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.28);
+      }
+
+      .info-members[hidden] { display: none; }
+
+      .members-list {
+        display: grid;
+        gap: 9px;
+        margin: 10px 0 0;
+        padding-left: 20px;
+        max-height: 40vh;
+        overflow-y: auto;
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      .members-list li { line-height: 1.4; }
+      .members-list strong { color: var(--text-main); }
+      .members-list span { color: var(--text-soft); }
+
+      @media (max-width: 640px) {
+        .info-panel {
+          top: auto;
+          bottom: 12px;
+          right: 12px;
+          left: 12px;
+          width: auto;
+          max-height: 55vh;
+          border-radius: 18px;
+          padding: 15px;
+        }
       }
     </style>
   </head>
 
   <body>
-    <div id="toolbar">
-      <div>
-        <label>Dataset:</label>
-        <select id="datasetSelect">
-          <option value="A">LHC</option>
-          <option value="B">Solar Cells</option>
-        </select>
+  <div id="cesiumContainer"></div>
+
+  <section id="introOverlay" class="intro-overlay" aria-label="Project introduction">
+    <div class="intro-card">
+      <div class="eyebrow">
+        <span class="status-dot"></span>
+        Citation flow map
       </div>
 
-      <div style="margin-top: 8px">
-        <label>Year:</label>
-        <input type="range" id="yearSlider" />
-        <span id="yearValue"></span>
+      <h1 class="intro-title">Mapping the geography of scientific influence</h1>
+
+      <p class="intro-lead">
+        This interactive globe visualizes how research citations move between
+        institutions across the world, showing how scientific fields evolve,
+        cluster, and connect over time.
+      </p>
+
+      <div class="intro-facts" aria-label="Project facts">
+        <div class="intro-fact">
+          <strong>5</strong>
+          <span>research topics</span>
+        </div>
+
+        <div class="intro-fact">
+          <strong>2005–2025</strong>
+          <span>publication years</span>
+        </div>
+
+        <div class="intro-fact">
+          <strong>25k+</strong>
+          <span>institutions</span>
+        </div>
+
+        <div class="intro-fact">
+          <strong>3M+</strong>
+          <span>citation links</span>
+        </div>
       </div>
+
+      <p class="intro-copy">
+        Choose a research topic, move through time, and explore which
+        institutions act as major producers and consumers of citations.
+      </p>
+
+      <button id="startGlobeButton" class="intro-button" type="button">
+        Start exploring the globe
+        <span aria-hidden="true">→</span>
+      </button>
     </div>
+  </section>
 
-    <div id="cesiumContainer"></div>
+  <main class="app-shell">
+    <section id="toolbar" aria-label="Visualization controls">
+        <div class="eyebrow">
+          <span class="status-dot"></span>
+          Citation flow map
+        </div>
+
+        <h1 class="toolbar-title">Publication Clusters</h1>
+        <p class="toolbar-subtitle">
+          Explore how citation flows between institutions evolve over time.
+        </p>
+
+        <label for="datasetSelect">Research topic</label>
+
+        <div class="control-card">
+          <div class="control-group">
+            <label for="datasetSelect">Dataset</label>
+            <select id="datasetSelect">
+              <option value="">Loading datasets…</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <div class="control-header">
+              <label for="yearSlider">Publication year</label>
+              <span id="yearValue">—</span>
+            </div>
+            <input type="range" id="yearSlider" list="yearTicks" />
+            <datalist id="yearTicks"></datalist>
+          </div>
+
+          <button id="playButton" class="reset-camera-button" type="button">
+              <span class="reset-camera-icon" aria-hidden="true">▶</span>
+              <span class="play-label">Play</span>
+          </button>
+
+          <button
+            id="resetCameraButton"
+            class="reset-camera-button"
+            type="button"
+            aria-label="Reset camera view"
+          >
+            <span class="reset-camera-icon" aria-hidden="true">↺</span>
+            Reset camera
+          </button>
+
+        <div class="stats-grid" aria-label="Current network statistics">
+          <div class="stat">
+            <span id="nodeCount" class="stat-value">—</span>
+            <span class="stat-label">Institutions</span>
+          </div>
+
+          <div class="stat">
+            <span id="edgeCount" class="stat-value">—</span>
+            <span class="stat-label">Links</span>
+          </div>
+
+          <div class="stat">
+            <span id="clusterCount" class="stat-value">—</span>
+            <span class="stat-label">Visible nodes</span>
+          </div>
+
+          <div class="stat">
+            <span id="visibleEdgeCount" class="stat-value">—</span>
+            <span class="stat-label">Visible links</span>
+          </div>
+        </div>
+
+        <div
+          class="leaderboards"
+          aria-label="Top citation producers and consumers"
+        >
+          <div class="leaderboard">
+            <div class="section-label">
+              Top producers
+              <span class="info-tip" title="Institutions whose papers cite others most often in this year">ⓘ</span>
+            </div>
+            <ol id="topProducersList" class="leaderboard-list">
+              <li>Loading…</li>
+            </ol>
+          </div>
+
+          <div class="leaderboard">
+            <div class="section-label">
+              Top consumers
+              <span class="info-tip" title="Institutions most cited by other papers in this year">ⓘ</span>
+            </div>
+            <ol id="topConsumersList" class="leaderboard-list">
+              <li>Loading…</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="legend" aria-label="Legend">
+          <div class="section-label">Legend</div>
+
+          <div class="legend-item">
+            <span class="legend-dot single"></span>
+            <span>Single institution</span>
+          </div>
+
+          <div class="legend-item">
+            <span class="legend-dot cluster"></span>
+            <span>Clustered institutions</span>
+          </div>
+
+          <div class="legend-item">
+            <span class="legend-line"></span>
+            <span>Directed citation flow</span>
+          </div>
+        </div>
+
+        <div id="statusMessage">Loading publication network data…</div>
+      </section>
+
+      <aside id="infoPanel" class="info-panel" aria-label="Institution details" hidden>
+        <header class="info-panel-header">
+          <div class="eyebrow">
+            <span class="status-dot"></span>
+            <span id="infoPanelType">Institution</span>
+          </div>
+          <button
+            type="button"
+            class="info-panel-close"
+            id="infoPanelClose"
+            aria-label="Close details"
+          >
+            X
+          </button>
+        </header>
+
+        <h2 class="info-panel-title" id="infoPanelTitle">—</h2>
+        <p class="info-panel-subtitle" id="infoPanelSubtitle"></p>
+
+        <div class="info-stats-grid" id="infoPanelStats"></div>
+
+        <div class="info-members" id="infoPanelMembersWrap" hidden>
+          <div class="section-label">Institutions in this cluster</div>
+          <ol class="members-list" id="infoPanelMembers"></ol>
+        </div>
+      </aside>
+
+      <div class="credit-pill">
+        Scroll or drag the globe to explore. Clusters update automatically with
+        zoom level.
+      </div>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script src="https://cesium.com/downloads/cesiumjs/releases/1.140/Build/Cesium/Cesium.js"></script>

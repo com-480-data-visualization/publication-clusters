@@ -1,0 +1,96 @@
+{
+  "version": "2.0",
+  "project": "Publication Clusters",
+  "description": "Interactive 3D globe visualization of directed academic citation flows between institutions.",
+  "defaultDataset": "lhc",
+  "yearRange": {
+    "start": 2005,
+    "end": 2025
+  },
+  "edgeSemantics": {
+    "directed": true,
+    "source": "citing / producing institution",
+    "target": "cited / consuming institution",
+    "weight": "citation volume or aggregated citation count for the institution pair in the selected year"
+  },
+  "files": {
+    "network": "Institution-to-institution citation edge list by year.",
+    "geo": "Institution metadata and coordinates used to place nodes on the globe.",
+    "topSources": "Top knowledge producers by year; used for the producer leaderboard.",
+    "topTargets": "Top knowledge consumers by year; used for the consumer leaderboard."
+  },
+  "datasets": [
+    {
+      "id": "lhc",
+      "label": "LHC",
+      "topic": "Large Hadron Collider",
+      "slug": "LHC",
+      "yearRange": {
+        "start": 2005,
+        "end": 2025
+      },
+      "network": "./data/institution_network_evolution_LHC_2005_2025.csv",
+      "geo": "./data/geo_dict_LHC.csv",
+      "topSources": "./data/top_sources_by_year_LHC_2005_2025.csv",
+      "topTargets": "./data/top_targets_by_year_LHC_2005_2025.csv"
+    },
+    {
+      "id": "solar-cells",
+      "label": "Solar Cells",
+      "topic": "Solar Cells",
+      "slug": "Solar_Cells",
+      "yearRange": {
+        "start": 2005,
+        "end": 2025
+      },
+      "network": "./data/institution_network_evolution_Solar_Cells_2005_2025.csv",
+      "geo": "./data/geo_dict_Solar_Cells.csv",
+      "topSources": "./data/top_sources_by_year_Solar_Cells_2005_2025.csv",
+      "topTargets": "./data/top_targets_by_year_Solar_Cells_2005_2025.csv"
+    },
+    {
+      "id": "gravitational-waves",
+      "label": "Gravitational Waves",
+      "topic": "Gravitational Waves",
+      "slug": "Gravitional_Waves",
+      "displaySlug": "Gravitational_Waves",
+      "note": "CSV filenames currently use the misspelled slug 'Gravitional_Waves'. Keep this slug unless the files are renamed.",
+      "yearRange": {
+        "start": 2005,
+        "end": 2025
+      },
+      "network": "./data/institution_network_evolution_Gravitional_Waves_2005_2025.csv",
+      "geo": "./data/geo_dict_Gravitional_Waves.csv",
+      "topSources": "./data/top_sources_by_year_Gravitional_Waves_2005_2025.csv",
+      "topTargets": "./data/top_targets_by_year_Gravitional_Waves_2005_2025.csv"
+    },
+    {
+      "id": "complex-network-analysis",
+      "label": "Complex Network Analysis",
+      "topic": "Complex Network Analysis",
+      "slug": "Complex_Network_Analysis",
+      "yearRange": {
+        "start": 2005,
+        "end": 2025
+      },
+      "network": "./data/institution_network_evolution_Complex_Network_Analysis_2005_2025.csv",
+      "geo": "./data/geo_dict_Complex_Network_Analysis.csv",
+      "topSources": "./data/top_sources_by_year_Complex_Network_Analysis_2005_2025.csv",
+      "topTargets": "./data/top_targets_by_year_Complex_Network_Analysis_2005_2025.csv"
+    },
+    {
+      "id": "magnetic-thin-films",
+      "label": "Magnetic Thin Films",
+      "topic": "Magnetic Thin Films",
+      "slug": "Magnetic_Thin_Films",
+      "yearRange": {
+        "start": 2005,
+        "end": 2025
+      },
+      "network": "./data/institution_network_evolution_Magnetic_Thin_Films_2005_2025.csv",
+      "geo": "./data/geo_dict_Magnetic_Thin_Films.csv",
+      "topSources": "./data/top_sources_by_year_Magnetic_Thin_Films_2005_2025.csv",
+      "topTargets": "./data/top_targets_by_year_Magnetic_Thin_Films_2005_2025.csv"
+    }
+  ]
+}

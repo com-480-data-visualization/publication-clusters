@@ -24,7 +24,7 @@ This project focuses on visualizing the evolution of global academic influence b
 ### Project Objectives
 The visualization is designed to address three primary questions regarding the global research landscape:
 1. **Temporal Connectivity:** Is the global academic network becoming more integrated over the years, or are we seeing the formation of isolated regional clusters?
-2. **Shifting Hubs:** Which countries and cities have transitioned from "knowledge consumers" to "major exporters" of research between the 20th and 21st centuries?
+2. **Shifting Hubs:** Which countries and cities have transitioned from "knowledge consumers" to "major exporters" of research between the two decades?
 3. **Citation Dyads:** Which specific pairs (university-to-university or country-to-country) have developed the strongest reciprocal links, and how do these alliances fluctuate?
 
 ### Motivation
