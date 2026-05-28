@@ -1,0 +1,126 @@
+Year: 2005
+Massey University (NZ) <-> Fonterra (New Zealand) (NZ): 27
+Le Mans Université (FR) <-> Centre National de la Recherche Scientifique (FR): 22
+Norwich Research Park (GB) <-> Quadram Institute (GB): 20
+Agricultural Research Service (US) <-> Eastern Regional Research Center (US): 20
+Wageningen University & Research (NL) <-> University of Leeds (GB): 16
+Year: 2006
+Fonterra (New Zealand) (NZ) <-> Massey University (NZ): 29
+Nederlands Instituut Voor Zuivel Oonderzoek (NL) <-> Wageningen University & Research (NL): 16
+Fundación Ciencias Exactas y Naturales (AR) <-> University of Buenos Aires (AR): 13
+Wageningen University & Research (NL) <-> North Carolina State University (US): 11
+Le Mans Université (FR) <-> Centre National de la Recherche Scientifique (FR): 11
+Year: 2007
+Centre National de la Recherche Scientifique (FR) <-> Le Mans Université (FR): 26
+Wageningen University & Research (NL) <-> Nederlands Instituut Voor Zuivel Oonderzoek (NL): 24
+Centre National de la Recherche Scientifique (FR) <-> Interface (United States) (US): 17
+Interface (United States) (US) <-> Le Mans Université (FR): 17
+Universidad de Sevilla (ES) <-> Fundación Ciencias Exactas y Naturales (AR): 12
+Year: 2008
+Centre National de la Recherche Scientifique (FR) <-> Le Mans Université (FR): 38
+Max Planck Society (DE) <-> Max Planck Institute of Colloids and Interfaces (DE): 33
+Centre National de la Recherche Scientifique (FR) <-> Interface (United States) (US): 33
+Interface (United States) (US) <-> Le Mans Université (FR): 33
+Quadram Institute (GB) <-> Norwich Research Park (GB): 23
+Year: 2009
+Fundación Ciencias Exactas y Naturales (AR) <-> University of Buenos Aires (AR): 32
+Quadram Institute (GB) <-> Norwich Research Park (GB): 23
+Massey University (NZ) <-> Fonterra (New Zealand) (NZ): 19
+Massey University (NZ) <-> Riddet Institute (NZ): 18
+University of Massachusetts Amherst (US) <-> Université Laval (CA): 13
+Year: 2010
+University of Massachusetts Amherst (US) <-> University of Leeds (GB): 31
+Centre National de la Recherche Scientifique (FR) <-> Le Mans Université (FR): 25
+University of Massachusetts Amherst (US) <-> Massey University (NZ): 23
+Consejo Nacional de Investigaciones Científicas y Técnicas (AR) <-> Centro de Investigación y Desarrollo en Criotecnología de Alimentos (AR): 22
+Interface (United States) (US) <-> Le Mans Université (FR): 22
+Year: 2011
+Centre National de la Recherche Scientifique (FR) <-> Le Mans Université (FR): 39
+University of Massachusetts Amherst (US) <-> Massey University (NZ): 36
+Riddet Institute (NZ) <-> Massey University (NZ): 33
+University of Buenos Aires (AR) <-> Fundación Ciencias Exactas y Naturales (AR): 31
+Quadram Institute (GB) <-> Norwich Research Park (GB): 29
+Year: 2012
+Riddet Institute (NZ) <-> Massey University (NZ): 40
+Le Mans Université (FR) <-> Centre National de la Recherche Scientifique (FR): 27
+University of Massachusetts Amherst (US) <-> Massey University (NZ): 26
+Centre National de la Recherche Scientifique (FR) <-> University of Massachusetts Amherst (US): 24
+Fundación Ciencias Exactas y Naturales (AR) <-> University of Buenos Aires (AR): 21
+Year: 2013
+Massey University (NZ) <-> Riddet Institute (NZ): 64
+University of Massachusetts Amherst (US) <-> Massey University (NZ): 39
+Max Planck Institute of Colloids and Interfaces (DE) <-> Max Planck Society (DE): 39
+Le Mans Université (FR) <-> Centre National de la Recherche Scientifique (FR): 31
+University of Buenos Aires (AR) <-> Fundación Ciencias Exactas y Naturales (AR): 27
+Year: 2014
+Jiangnan University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 71
+Riddet Institute (NZ) <-> Massey University (NZ): 45
+Laboratoire Science & technologie du Lait & de l'œuf (FR) <-> Institut Agro Rennes-Angers (FR): 39
+University of Massachusetts Amherst (US) <-> Massey University (NZ): 32
+Le Mans Université (FR) <-> Centre National de la Recherche Scientifique (FR): 30
+Year: 2015
+Jiangnan University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 76
+TiFN (NL) <-> Wageningen University & Research (NL): 58
+Riddet Institute (NZ) <-> Massey University (NZ): 47
+Institut Agro Rennes-Angers (FR) <-> Laboratoire Science & technologie du Lait & de l'œuf (FR): 46
+University of Massachusetts Amherst (US) <-> Wageningen University & Research (NL): 43
+Year: 2016
+University of Massachusetts Amherst (US) <-> State Key Laboratory of Food Science and Technology (CN): 76
+Riddet Institute (NZ) <-> Massey University (NZ): 59
+Jiangnan University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 56
+Le Mans Université (FR) <-> Centre National de la Recherche Scientifique (FR): 46
+TiFN (NL) <-> Wageningen University & Research (NL): 45
+Year: 2017
+State Key Laboratory of Food Science and Technology (CN) <-> Jiangnan University (CN): 74
+Nanchang University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 47
+University of Massachusetts Amherst (US) <-> University of Leeds (GB): 44
+University of Massachusetts Amherst (US) <-> State Key Laboratory of Food Science and Technology (CN): 40
+University of Massachusetts Amherst (US) <-> China Agricultural University (CN): 39
+Year: 2018
+Jiangnan University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 160
+State Key Laboratory of Food Science and Technology (CN) <-> Nanchang University (CN): 75
+University of Massachusetts Amherst (US) <-> Jiangnan University (CN): 41
+University College Cork (IE) <-> Teagasc - The Irish Agriculture and Food Development Authority (IE): 36
+Centre National de la Recherche Scientifique (FR) <-> Le Mans Université (FR): 31
+Year: 2019
+Jiangnan University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 166
+State Key Laboratory of Food Science and Technology (CN) <-> Nanchang University (CN): 120
+Le Mans Université (FR) <-> Centre National de la Recherche Scientifique (FR): 49
+TiFN (NL) <-> Wageningen University & Research (NL): 40
+State Key Laboratory of Food Science and Technology (CN) <-> Huazhong Agricultural University (CN): 39
+Year: 2020
+Nanchang University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 138
+State Key Laboratory of Food Science and Technology (CN) <-> Jiangnan University (CN): 117
+Riddet Institute (NZ) <-> Massey University (NZ): 79
+Ministry of Agriculture and Rural Affairs (CN) <-> Shanghai Ocean University (CN): 49
+TiFN (NL) <-> Wageningen University & Research (NL): 38
+Year: 2021
+State Key Laboratory of Food Science and Technology (CN) <-> Jiangnan University (CN): 243
+Massey University (NZ) <-> Riddet Institute (NZ): 156
+Nanchang University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 151
+TiFN (NL) <-> Wageningen University & Research (NL): 102
+Northeast Agricultural University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 57
+Year: 2022
+Jiangnan University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 270
+State Key Laboratory of Food Science and Technology (CN) <-> Nanchang University (CN): 127
+Northeast Agricultural University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 80
+State Key Laboratory of Food Science and Technology (CN) <-> Huazhong Agricultural University (CN): 61
+TiFN (NL) <-> Wageningen University & Research (NL): 57
+Year: 2023
+State Key Laboratory of Food Science and Technology (CN) <-> Jiangnan University (CN): 304
+Nanchang University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 140
+Northeast Agricultural University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 113
+Northeast Agricultural University (CN) <-> Nanchang University (CN): 72
+Shanghai Ocean University (CN) <-> Ministry of Agriculture and Rural Affairs (CN): 65
+Year: 2024
+State Key Laboratory of Food Science and Technology (CN) <-> Jiangnan University (CN): 282
+Nanchang University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 142
+Northeast Agricultural University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 134
+Northeast Agricultural University (CN) <-> Jiangnan University (CN): 86
+Northeast Agricultural University (CN) <-> Jiangsu University (CN): 76
+Year: 2025
+State Key Laboratory of Food Science and Technology (CN) <-> Northeast Agricultural University (CN): 146
+Nanchang University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 131
+State Key Laboratory of Food Science and Technology (CN) <-> Jiangnan University (CN): 128
+Northeast Agricultural University (CN) <-> Jiangnan University (CN): 84
+Riddet Institute (NZ) <-> Massey University (NZ): 82
