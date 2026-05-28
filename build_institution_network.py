@@ -186,7 +186,7 @@ def build_edges_with_geo_dict(papers_data, geo_dict):
 
     # 2. Build the network edges ONLY for papers that are doing the citing
     for paper in papers_data:
-        # CRITICAL: Skip generating edges if this paper is just a referenced stub 
+        # Skip generating edges if this paper is just a referenced stub 
         # (it doesn't have "referenced_works" populated anyway)
         if "referenced_works" not in paper:
             continue
@@ -224,6 +224,7 @@ def build_edges_with_geo_dict(papers_data, geo_dict):
 
     top_sources_by_year = {}
     top_targets_by_year = {}
+    reciprocal_edges_by_year = {}
 
     for year in all_years:
         # --- Top 5 Sources for this specific year ---
@@ -258,7 +259,35 @@ def build_edges_with_geo_dict(papers_data, geo_dict):
                 "top_3_sources": top_3_sources
             }
 
-    return pd.DataFrame(list(inst_edges.values())), top_sources_by_year, top_targets_by_year
+        # Top 5 strongest reciprocal edges for this year
+        reciprocal_edges = {}
+        for (s_id, t_id, edge_year), edge_data in inst_edges.items():
+            if edge_year == year and (t_id, s_id, year) in inst_edges:
+                reciprocal_weight = min(edge_data["weight"], inst_edges[(t_id, s_id, year)]["weight"])
+                if (t_id, s_id) not in reciprocal_edges: 
+                    reciprocal_edges[(s_id, t_id)] = reciprocal_weight
+        # Sort by weight in descending order and take the top 5
+        reciprocal_edges = sorted(reciprocal_edges.items(), key=lambda x: x[1], reverse=True)[:5]
+        top_reciprocal_edges = reciprocal_edges[:5]
+        print(top_reciprocal_edges)
+        print(f"Year {year} - Top 5 Reciprocal Edges:")
+        for (s_id, t_id), weight in top_reciprocal_edges:
+            print(f"  {s_id} <-> {t_id} with reciprocal weight {weight}")
+        reciprocal_edges_by_year[year] = top_reciprocal_edges
+
+    #identify the institutions that appear as both source and target in both the very first and very last year of the dataset
+    first_year = min(reciprocal_edges_by_year.keys())
+    last_year = max(reciprocal_edges_by_year.keys())
+    institutions = year_source_counts[first_year].keys() & year_target_counts[first_year].keys() & year_source_counts[last_year].keys() & year_target_counts[last_year].keys()
+    print(f"Institutions that are both sources and targets in the first and last year: {institutions}")
+    #compute the difference between the first and last year of the delta in source and target frequency for these institutions
+    score_deltas = {}
+    for inst in institutions:
+        score_delta = ((year_target_counts[last_year][inst] - year_source_counts[last_year][inst]), (year_target_counts[first_year][inst] - year_source_counts[first_year][inst]))
+        score_deltas[inst] = score_delta
+        print(f"Institution {inst} - Score Delta: {score_delta}")
+
+    return pd.DataFrame(list(inst_edges.values())), top_sources_by_year, top_targets_by_year, reciprocal_edges_by_year, score_deltas
 
 
 def fetch_all_years_raw_data(
