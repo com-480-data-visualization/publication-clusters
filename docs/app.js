@@ -1,13 +1,11 @@
 Cesium.Ion.defaultAccessToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkMWEzMjcyZi0yODY0LTQxYzctODY3NC00OTk2NmQzNDhlN2QiLCJpZCI6NDE3NjM4LCJpYXQiOjE3NzY0MTczODl9.aDksDwuepiqb2mEkFHFIyHwIdbRqqUim9wvX4A-mg7o";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNzdiMDc5Ny02NzFjLTQ5ODEtYjdkNC1hN2MyMWI4MTIxYjQiLCJpZCI6NDM3MTQ5LCJzdWIiOiJFZGdhckQiLCJpc3MiOiJodHRwczovL2FwaS5jZXNpdW0uY29tIiwiYXVkIjoiVW50aXRsZWQiLCJpYXQiOjE3Nzk4OTc0ODV9.t2FGbhglNO_FC-tPEoLaO0NiKvCi8WrFum-_WII-Ilg";
 
 // --------------------------------------------------
 // Cesium viewer
 // --------------------------------------------------
 
 const viewer = new Cesium.Viewer("cesiumContainer", {
-    terrain: Cesium.Terrain.fromWorldTerrain(),
-
     requestRenderMode: true,
     maximumRenderTimeChange: Infinity,
 
@@ -96,6 +94,7 @@ const topConsumersList = document.getElementById("topConsumersList");
 
 let currentSuperpointsById = new Map();
 let selectedInstitutionId = null;
+let highlightedSuperpointId = null;
 
 const infoPanel = document.getElementById("infoPanel");
 const infoPanelClose = document.getElementById("infoPanelClose");
@@ -105,6 +104,8 @@ const infoPanelSubtitle = document.getElementById("infoPanelSubtitle");
 const infoPanelStats = document.getElementById("infoPanelStats");
 const infoPanelMembersWrap = document.getElementById("infoPanelMembersWrap");
 const infoPanelMembers = document.getElementById("infoPanelMembers");
+
+const HIGHLIGHT_COLOR = Cesium.Color.fromCssColorString("#38bdf8");
 
 //
 // Manifest Helpers
@@ -686,8 +687,8 @@ const MAX_EDGES_DRAWN  = 400;  // Only draw the N strongest (set Infinity to dis
 const EDGE_WIDTH_MIN = 1.0;    // Thinnest line (px)
 const EDGE_WIDTH_MAX = 50.0;   // Thickest line (px)
 
-const EDGE_ALPHA_MIN = 0.06;   // Faint small flows
-const EDGE_ALPHA_MAX = 0.95;   // Solid big flows
+const EDGE_ALPHA_MIN = 0.05;   // Faint small flows
+const EDGE_ALPHA_MAX = 1;   // Solid big flows
 
 // Magnitude color ramp (small -> large)
 const EDGE_RAMP = [
@@ -761,67 +762,99 @@ function getEdgeColor(t) {
     return base.withAlpha(alpha);
 }
 
+function getSuperpointMeterRadius(superpoint) {
+    const base = getCameraHeight() * 0.008;
+    const volume = superpoint.totalWeight ?? 0;
+    const clusterBoost = Math.sqrt(superpoint.count ?? 1);
+    const dataFactor = 0.6 + Math.min(1.6, Math.sqrt(volume) * 0.03 + clusterBoost * 0.12);
+    return Math.min(base * dataFactor, 400_000);      // hard cap so it never gets absurd zoomed out
+}
+
 // --------------------------------------------------
 // Rendering
 // --------------------------------------------------
+
+function backOffAlongGeodesic(fromSp, toSp, backoffMeters, height) {
+    const fromCarto = Cesium.Cartographic.fromDegrees(fromSp.lon, fromSp.lat);
+    const toCarto = Cesium.Cartographic.fromDegrees(toSp.lon, toSp.lat);
+    const geodesic = new Cesium.EllipsoidGeodesic(fromCarto, toCarto);
+    const total = geodesic.surfaceDistance;
+
+    // degenerate (same superpoint / self-loop) → just use the center
+    if (!Number.isFinite(total) || total < 1) {
+        return makePosition(fromSp.lon, fromSp.lat, height);
+    }
+
+    // never pass ~midpoint, so the two ends can't cross when nodes are close
+    const d = Math.min(backoffMeters, total * 0.45);
+    const p = geodesic.interpolateUsingSurfaceDistance(d);
+    return Cesium.Cartesian3.fromRadians(p.longitude, p.latitude, height);
+}
+
+function setHighlight(newId) {
+    // revert the previously highlighted node to its base color
+    if (highlightedSuperpointId && highlightedSuperpointId !== newId) {
+        const prev = pointDataSource.entities.getById(highlightedSuperpointId);
+        const prevSp = currentSuperpointsById.get(highlightedSuperpointId);
+        if (prev?.ellipsoid && prevSp) {
+            prev.ellipsoid.material = getNodeColor(prevSp.count);
+        }
+    }
+
+    highlightedSuperpointId = newId;
+
+    // color the new one
+    if (newId) {
+        const entity = pointDataSource.entities.getById(newId);
+        const sp = currentSuperpointsById.get(newId);
+        if (entity?.ellipsoid && sp) {
+            entity.ellipsoid.material = getHighlightColor(sp.count);
+        }
+    }
+}
+
+function getHighlightColor(count) {
+    return getNodeColor(count).brighten(0.55, new Cesium.Color());
+}
 
 function renderSuperpoints(superpoints) {
     pointDataSource.entities.removeAll();
 
     for (const superpoint of superpoints) {
         const isCluster = superpoint.count > 1;
-        const pixelSize = getSuperpointPixelSize(superpoint);
+        const radius = getSuperpointMeterRadius(superpoint);
+
+        const isHighlighted = superpoint.id === highlightedSuperpointId;
+        const displayColor = isHighlighted
+            ? getHighlightColor(superpoint.count)
+            : getNodeColor(superpoint.count);
 
         pointDataSource.entities.add({
             id: superpoint.id,
-            position: makePosition(superpoint.lon, superpoint.lat),
-
-            point: {
-                pixelSize,
-                color: getNodeColor(superpoint.count),
-                outlineColor: getNodeOutlineColor(),
-                outlineWidth: isCluster ? 2.4 : 1.8,
-
-                // Important: let the globe hide points on the far side.
-                disableDepthTestDistance: 0,
-
-                // Optional: make front-side nodes fully solid.
-                translucencyByDistance: new Cesium.NearFarScalar(
-                    500_000,
-                    1.0,
-                    25_000_000,
-                    1.0
-                ),
-
-                scaleByDistance: new Cesium.NearFarScalar(
-                    500_000,
-                    1.0,
-                    25_000_000,
-                    0.82
-                ),
+            position: makePosition(superpoint.lon, superpoint.lat, 0),
+            ellipsoid: {
+                radii: new Cesium.Cartesian3(radius, radius, radius),   // unchanged size
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                material: displayColor,
+                outline: false,
+                stackPartitions: 24,
+                slicePartitions: 24,
             },
 
-            label: isCluster
-                ? {
-                    text: String(superpoint.count),
-                    font: getLabelFont(superpoint.count),
-                    fillColor: Cesium.Color.fromCssColorString("#020617"),
-                    outlineColor: Cesium.Color.fromCssColorString("#ffffff"),
-                    outlineWidth: 2,
-                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                    pixelOffset: new Cesium.Cartesian2(0, -(pixelSize * 0.72)),
-
-                    showBackground: true,
-                    backgroundColor: Cesium.Color.fromCssColorString("#f8fafc").withAlpha(0.86),
-                    backgroundPadding: new Cesium.Cartesian2(7, 4),
-
-                    disableDepthTestDistance: 0,
-                    scale: 1.0,
-                }
-                : undefined,
+            label: isCluster ? {
+                text: String(superpoint.count),
+                font: getLabelFont(superpoint.count),
+                fillColor: Cesium.Color.fromCssColorString("#020617"),
+                outlineColor: Cesium.Color.fromCssColorString("#ffffff"),
+                outlineWidth: 2,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                verticalOrigin: Cesium.VerticalOrigin.CENTER,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                eyeOffset: new Cesium.Cartesian3(0, 0, -radius * 3),
+                showBackground: true,
+                backgroundColor: Cesium.Color.fromCssColorString("#f8fafc").withAlpha(0.86),
+                backgroundPadding: new Cesium.Cartesian2(7, 4),
+            } : undefined,
 
             description: `
                 <strong>${superpoint.count} institution${superpoint.count === 1 ? "" : "s"}</strong><br/>
@@ -880,11 +913,15 @@ function renderSuperEdges(superpoints, superEdges) {
 
         const t = normalizeWeight(edge.weight ?? 0, minW, maxW);
 
+        const EDGE_HEIGHT = 20_000;
+        const rSource = getSuperpointMeterRadius(source);
+        const rTarget = getSuperpointMeterRadius(target);
+
         edgeDataSource.entities.add({
             polyline: {
                 positions: [
-                    makePosition(source.lon, source.lat, 20_000),
-                    makePosition(target.lon, target.lat, 20_000),
+                    backOffAlongGeodesic(source, target, rSource, EDGE_HEIGHT),
+                    backOffAlongGeodesic(target, source, rTarget, EDGE_HEIGHT),
                 ],
                 width: getEdgeWidth(t),
                 material: new Cesium.PolylineArrowMaterialProperty(
@@ -1254,6 +1291,8 @@ function showInfoForSuperpoint(superpoint, options = {}) {
 function hideInfoPanel() {
     infoPanel.hidden = true;
     selectedInstitutionId = null;
+    setHighlight(null);
+    viewer.scene.requestRender();
 }
 
 infoPanelClose.addEventListener("click", hideInfoPanel);
@@ -1268,7 +1307,11 @@ clickHandler.setInputAction((click) => {
 
         if (type === "superpoint") {
             const superpoint = currentSuperpointsById.get(picked.id.id);
-            if (superpoint) showInfoForSuperpoint(superpoint);
+            if (superpoint) {
+                setHighlight(superpoint.id);
+                showInfoForSuperpoint(superpoint);
+                viewer.scene.requestRender();
+            }
             return;
         }
 
