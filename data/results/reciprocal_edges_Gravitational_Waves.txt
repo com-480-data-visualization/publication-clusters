@@ -1,103 +1,124 @@
+Year: 2005
 University of Manchester (GB) <-> SKA Observatory (GB): 80
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 56
 Max Planck Institute for Gravitational Physics (DE) <-> Max Planck Society (DE): 42
 The University of Tokyo (JP) <-> Tokyo University of the Arts (JP): 37
 California Institute of Technology (US) <-> Max Planck Society (DE): 31
+Year: 2006
 University of Manchester (GB) <-> SKA Observatory (GB): 41
 Commonwealth Scientific and Industrial Research Organisation (AU) <-> Australia Telescope National Facility (AU): 32
 The University of Tokyo (JP) <-> University of Illinois Urbana-Champaign (US): 32
 Tokyo University of the Arts (JP) <-> The University of Tokyo (JP): 28
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 28
+Year: 2007
 Max Planck Institute for Gravitational Physics (DE) <-> Max Planck Society (DE): 103
 Max Planck Institute for Gravitational Physics (DE) <-> California Institute of Technology (US): 40
 Max Planck Institute for Gravitational Physics (DE) <-> Goddard Space Flight Center (US): 30
 Max Planck Society (DE) <-> California Institute of Technology (US): 28
 California Institute of Technology (US) <-> Goddard Space Flight Center (US): 26
+Year: 2008
 Max Planck Institute for Gravitational Physics (DE) <-> Max Planck Society (DE): 66
 Max Planck Institute for Gravitational Physics (DE) <-> California Institute of Technology (US): 61
 California Institute of Technology (US) <-> Max Planck Society (DE): 36
 The University of Tokyo (JP) <-> University of Illinois Urbana-Champaign (US): 30
 Cornell University (US) <-> California Institute of Technology (US): 29
+Year: 2009
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 82
 Max Planck Society (DE) <-> Max Planck Institute for Gravitational Physics (DE): 78
 California Institute of Technology (US) <-> Max Planck Society (DE): 63
 Australia Telescope National Facility (AU) <-> Commonwealth Scientific and Industrial Research Organisation (AU): 50
 California Institute of Technology (US) <-> Pennsylvania State University (US): 46
+Year: 2010
 Max Planck Society (DE) <-> Max Planck Institute for Gravitational Physics (DE): 80
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 76
 Australia Telescope National Facility (AU) <-> Commonwealth Scientific and Industrial Research Organisation (AU): 56
 Max Planck Society (DE) <-> California Institute of Technology (US): 55
 Max Planck Institute for Gravitational Physics (DE) <-> Leibniz University Hannover (DE): 39
+Year: 2011
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 69
 Max Planck Institute for Gravitational Physics (DE) <-> Max Planck Society (DE): 47
 California Institute of Technology (US) <-> University of Maryland, College Park (US): 41
 California Institute of Technology (US) <-> Centre National de la Recherche Scientifique (FR): 40
 California Institute of Technology (US) <-> Friedrich Schiller University Jena (DE): 36
+Year: 2012
 Max Planck Institute for Gravitational Physics (DE) <-> California Institute of Technology (US): 79
 Max Planck Institute for Gravitational Physics (DE) <-> Max Planck Society (DE): 69
 California Institute of Technology (US) <-> Max Planck Society (DE): 63
 University of Pittsburgh (US) <-> Max Planck Institute for Gravitational Physics (DE): 41
 Centre National de la Recherche Scientifique (FR) <-> California Institute of Technology (US): 39
+Year: 2013
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 153
 Max Planck Society (DE) <-> Max Planck Institute for Gravitational Physics (DE): 102
 California Institute of Technology (US) <-> Max Planck Society (DE): 73
 California Institute of Technology (US) <-> Cornell University (US): 46
 Max Planck Institute for Gravitational Physics (DE) <-> Leibniz University Hannover (DE): 41
+Year: 2014
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 123
 Max Planck Society (DE) <-> Max Planck Institute for Gravitational Physics (DE): 86
 Max Planck Society (DE) <-> California Institute of Technology (US): 75
 Commonwealth Scientific and Industrial Research Organisation (AU) <-> Australia Telescope National Facility (AU): 68
 Centre National de la Recherche Scientifique (FR) <-> California Institute of Technology (US): 55
+Year: 2015
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 122
 Australia Telescope National Facility (AU) <-> Commonwealth Scientific and Industrial Research Organisation (AU): 94
 Max Planck Institute for Gravitational Physics (DE) <-> Max Planck Society (DE): 60
 Astronomy and Space (AU) <-> Commonwealth Scientific and Industrial Research Organisation (AU): 59
 Australia Telescope National Facility (AU) <-> Astronomy and Space (AU): 50
+Year: 2016
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 216
 California Institute of Technology (US) <-> Centre National de la Recherche Scientifique (FR): 99
 California Institute of Technology (US) <-> University of Birmingham (GB): 72
 California Institute of Technology (US) <-> Cardiff University (GB): 68
 California Institute of Technology (US) <-> Canadian Institute for Theoretical Astrophysics (CA): 67
+Year: 2017
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 166
 Commonwealth Scientific and Industrial Research Organisation (AU) <-> Australia Telescope National Facility (AU): 79
 Commonwealth Scientific and Industrial Research Organisation (AU) <-> Astronomy and Space (AU): 59
 California Institute of Technology (US) <-> Massachusetts Institute of Technology (US): 56
 Australia Telescope National Facility (AU) <-> Astronomy and Space (AU): 54
+Year: 2018
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 93
 California Institute of Technology (US) <-> Cardiff University (GB): 60
 California Institute of Technology (US) <-> Centre National de la Recherche Scientifique (FR): 52
 Max Planck Institute for Radio Astronomy (DE) <-> University of Manchester (GB): 49
 Max Planck Institute for Gravitational Physics (DE) <-> Leibniz University Hannover (DE): 44
+Year: 2019
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 192
 California Institute of Technology (US) <-> Centre National de la Recherche Scientifique (FR): 101
 California Institute of Technology (US) <-> Cornell University (US): 82
 California Institute of Technology (US) <-> University of Birmingham (GB): 77
 California Institute of Technology (US) <-> Princeton University (US): 74
+Year: 2020
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 179
 Max Planck Institute for Gravitational Physics (DE) <-> Leibniz University Hannover (DE): 118
 California Institute of Technology (US) <-> Cardiff University (GB): 115
 Monash University (AU) <-> ARC Centre of Excellence for Gravitational Wave Discovery (AU): 114
 University of Chinese Academy of Sciences (CN) <-> Chinese Academy of Sciences (CN): 106
+Year: 2021
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 285
 Leibniz University Hannover (DE) <-> Max Planck Institute for Gravitational Physics (DE): 130
 California Institute of Technology (US) <-> Centre National de la Recherche Scientifique (FR): 127
 California Institute of Technology (US) <-> Cardiff University (GB): 119
 California Institute of Technology (US) <-> Massachusetts Institute of Technology (US): 115
+Year: 2022
 Max Planck Institute for Gravitational Physics (DE) <-> California Institute of Technology (US): 243
 Chinese Academy of Sciences (CN) <-> National Astronomical Observatories (CN): 108
 Max Planck Institute for Gravitational Physics (DE) <-> Leibniz University Hannover (DE): 108
 Chinese Academy of Sciences (CN) <-> University of Chinese Academy of Sciences (CN): 101
 California Institute of Technology (US) <-> Leibniz University Hannover (DE): 87
+Year: 2023
 Leibniz University Hannover (DE) <-> Max Planck Institute for Gravitational Physics (DE): 122
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 98
 University of Chinese Academy of Sciences (CN) <-> Chinese Academy of Sciences (CN): 93
 National Astronomical Observatories (CN) <-> Chinese Academy of Sciences (CN): 84
 ARC Centre of Excellence for Gravitational Wave Discovery (AU) <-> California Institute of Technology (US): 72
+Year: 2024
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 126
 Commonwealth Scientific and Industrial Research Organisation (AU) <-> Australia Telescope National Facility (AU): 82
 Max Planck Institute for Gravitational Physics (DE) <-> Leibniz University Hannover (DE): 81
 University of Chinese Academy of Sciences (CN) <-> Chinese Academy of Sciences (CN): 67
 Max Planck Institute for Gravitational Physics (DE) <-> Centre National de la Recherche Scientifique (FR): 66
+Year: 2025
 California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 139
 Max Planck Institute for Gravitational Physics (DE) <-> University of Birmingham (GB): 71
 Max Planck Institute for Gravitational Physics (DE) <-> Friedrich Schiller University Jena (DE): 69

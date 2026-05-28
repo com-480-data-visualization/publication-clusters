@@ -1,103 +1,124 @@
+Year: 2005
 Laboratoire de Physique Théorique (FR) <-> Centre National de la Recherche Scientifique (FR): 13
 University of Notre Dame (US) <-> Boston University (US): 12
 Centre National de la Recherche Scientifique (FR) <-> Université Paris Cité (FR): 9
 Umeå University (SE) <-> Novo Nordisk (Denmark) (DK): 9
 Centre National de la Recherche Scientifique (FR) <-> University of Notre Dame (US): 8
+Year: 2006
 Centre National de la Recherche Scientifique (FR) <-> Université Paris Cité (FR): 16
 Laboratoire d'Informatique Algorithmique: Fondements et Applications (FR) <-> Centre National de la Recherche Scientifique (FR): 15
 Laboratoire d'Informatique Algorithmique: Fondements et Applications (FR) <-> Université Paris Cité (FR): 11
 Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 8
 University of Michigan (US) <-> Northwestern University (US): 7
+Year: 2007
 Universidade de São Paulo (BR) <-> Universidade Federal de São Carlos (BR): 14
 Centre National de la Recherche Scientifique (FR) <-> Université Paris Cité (FR): 12
 Carnegie Mellon University (US) <-> Cornell University (US): 9
 University of Michigan (US) <-> Cornell University (US): 8
 Pompeu Fabra University (ES) <-> Institució Catalana de Recerca i Estudis Avançats (ES): 8
+Year: 2008
 University of Aveiro (PT) <-> Physico-Technical Institute (RU): 14
 Carnegie Mellon University (US) <-> Cornell University (US): 13
 Carnegie Mellon University (US) <-> University of Illinois Urbana-Champaign (US): 12
 Carnegie Mellon University (US) <-> Stanford University (US): 11
 Carnegie Mellon University (US) <-> University of Michigan (US): 11
+Year: 2009
 University of Fribourg (CH) <-> University of Science and Technology of China (CN): 17
 University of Michigan (US) <-> Carnegie Mellon University (US): 16
 École Normale Supérieure - PSL (FR) <-> Institut national de recherche en informatique et en automatique (FR): 11
 Santa Fe Institute (US) <-> University of Michigan (US): 9
 University of Illinois Urbana-Champaign (US) <-> Carnegie Mellon University (US): 8
+Year: 2010
 Chinese Academy of Sciences (CN) <-> Institute of Computing Technology (CN): 28
 University of Electronic Science and Technology of China (CN) <-> University of Fribourg (CH): 14
 Commonwealth Scientific and Industrial Research Organisation (AU) <-> The University of Sydney (AU): 11
 Erasmus University Rotterdam (NL) <-> Leiden University (NL): 10
 Fudan University (CN) <-> Universitat Politècnica de Catalunya (ES): 9
+Year: 2011
 Stanford University (US) <-> Carnegie Mellon University (US): 21
 University of Fribourg (CH) <-> University of Science and Technology of China (CN): 20
 University of Electronic Science and Technology of China (CN) <-> University of Fribourg (CH): 17
 Institute for Scientific Interchange (IT) <-> Indiana University Bloomington (US): 13
 University of Michigan (US) <-> Institute for Scientific Interchange (IT): 11
+Year: 2012
 University of California, Berkeley (US) <-> Carnegie Mellon University (US): 17
 Universidade de São Paulo (BR) <-> Universidade Federal de São Carlos (BR): 17
 Harvard University (US) <-> Harvard University Press (US): 16
 University of Electronic Science and Technology of China (CN) <-> University of Fribourg (CH): 15
 Boston University (US) <-> Bar-Ilan University (IL): 13
+Year: 2013
 Southwest University (CN) <-> Chongqing University (CN): 20
 Northeastern University (US) <-> Universitat Politècnica de Catalunya (ES): 14
 Stanford University (US) <-> Carnegie Mellon University (US): 13
 University of Fribourg (CH) <-> University of Electronic Science and Technology of China (CN): 12
 University of Michigan (US) <-> Cornell University (US): 10
+Year: 2014
 Bar-Ilan University (IL) <-> Boston University (US): 21
 Stanford University (US) <-> Carnegie Mellon University (US): 20
 Shanghai Jiao Tong University (CN) <-> Bar-Ilan University (IL): 14
 Stanford University (US) <-> Cornell University (US): 10
 Centre National de la Recherche Scientifique (FR) <-> Santa Fe Institute (US): 9
+Year: 2015
 Bar-Ilan University (IL) <-> Boston University (US): 23
 China University of Geosciences (Beijing) (CN) <-> Ministry of Natural Resources (CN): 14
 Boston University (US) <-> Northeastern University (US): 13
 Universitat Rovira i Virgili (ES) <-> Queen Mary University of London (GB): 11
 Carnegie Mellon University (US) <-> Cornell University (US): 11
+Year: 2016
 University of Michigan (US) <-> Carnegie Mellon University (US): 18
 University of Electronic Science and Technology of China (CN) <-> University of Shanghai for Science and Technology (CN): 17
 Boston University (US) <-> Bar-Ilan University (IL): 17
 Ministry of Natural Resources (CN) <-> China University of Geosciences (Beijing) (CN): 14
 Stanford University (US) <-> Cornell University (US): 11
+Year: 2017
 Ministry of Natural Resources (CN) <-> China University of Geosciences (Beijing) (CN): 21
 Boston University (US) <-> University of Electronic Science and Technology of China (CN): 18
 Chinese Academy of Sciences (CN) <-> Institute of Computing Technology (CN): 18
 University of Michigan (US) <-> Carnegie Mellon University (US): 13
 Sorbonne Université (FR) <-> Centre National de la Recherche Scientifique (FR): 12
+Year: 2018
 Southwest University (CN) <-> University of Electronic Science and Technology of China (CN): 89
 University of Electronic Science and Technology of China (CN) <-> University of Fribourg (CH): 19
 Hangzhou Normal University (CN) <-> University of Electronic Science and Technology of China (CN): 15
 Ministry of Natural Resources (CN) <-> China University of Geosciences (Beijing) (CN): 12
 University of Electronic Science and Technology of China (CN) <-> University of Shanghai for Science and Technology (CN): 11
+Year: 2019
 University of Electronic Science and Technology of China (CN) <-> Massachusetts Institute of Technology (US): 29
 Indian Institute of Technology BHU (IN) <-> Banaras Hindu University (IN): 21
 Universidade do Porto (PT) <-> INESC TEC (PT): 16
 University of Electronic Science and Technology of China (CN) <-> University of Shanghai for Science and Technology (CN): 12
 University of Electronic Science and Technology of China (CN) <-> Northwestern Polytechnical University (CN): 12
+Year: 2020
 Indian Institute of Technology BHU (IN) <-> Banaras Hindu University (IN): 27
 Tsinghua University (CN) <-> University of Electronic Science and Technology of China (CN): 24
 University of Electronic Science and Technology of China (CN) <-> Xidian University (CN): 13
 Boston University (US) <-> Bar-Ilan University (IL): 12
 University of Potsdam (DE) <-> Potsdam Institute for Climate Impact Research (DE): 11
+Year: 2021
 Humboldt-Universität zu Berlin (DE) <-> Potsdam Institute for Climate Impact Research (DE): 23
 Tianjin University (CN) <-> Xidian University (CN): 12
 Southwest University (CN) <-> Northwestern Polytechnical University (CN): 12
 Bulgarian Academy of Sciences (BG) <-> Institute of Mechanics (BG): 12
 Universidade do Porto (PT) <-> INESC TEC (PT): 11
+Year: 2022
 Indian Institute of Technology BHU (IN) <-> Banaras Hindu University (IN): 27
 Southwest University (CN) <-> Northwestern Polytechnical University (CN): 22
 Indian Institute of Technology Delhi (IN) <-> Delhi Technological University (IN): 12
 University of Canberra (AU) <-> UNSW Sydney (AU): 11
 Université Claude Bernard Lyon 1 (FR) <-> Centre National de la Recherche Scientifique (FR): 9
+Year: 2023
 Chinese Academy of Sciences (CN) <-> Institute of Geographic Sciences and Natural Resources Research (CN): 18
 Chinese Academy of Sciences (CN) <-> University of Chinese Academy of Sciences (CN): 15
 University of Chinese Academy of Sciences (CN) <-> Institute of Geographic Sciences and Natural Resources Research (CN): 12
 Université de Toulon (FR) <-> Centre National de la Recherche Scientifique (FR): 12
 Southwest University (CN) <-> University of Electronic Science and Technology of China (CN): 8
+Year: 2024
 Montreal Neurological Institute and Hospital (CA) <-> McGill University (CA): 12
 University of Electronic Science and Technology of China (CN) <-> University of Shanghai for Science and Technology (CN): 11
 National University of Defense Technology (CN) <-> Northwestern Polytechnical University (CN): 9
 Turing Institute (GB) <-> Queen Mary University of London (GB): 9
 University of Trento (IT) <-> Fondazione Bruno Kessler (IT): 8
+Year: 2025
 Kunming Institute of Zoology (CN) <-> Chinese Academy of Sciences (CN): 12
 Université de Toulon (FR) <-> Aix-Marseille Université (FR): 11
 National University of Defense Technology (CN) <-> Beijing Normal University (CN): 10
