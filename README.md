@@ -35,6 +35,10 @@ We cover five research domains, over 25,000 institutions worldwide, and more tha
 
 ### Requirements
 
+```bash
+pip install -r requirements.txt
+```
+
 The main dependencies are `requests`, `pandas`, and `geopy` for the data pipeline. The website itself has no Python dependencies — it runs entirely in the browser.
 
 ### Running the data pipeline
