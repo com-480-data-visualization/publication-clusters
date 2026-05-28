@@ -1,0 +1,96 @@
+============================================================
+Q2 — Institutions that flipped from consumer to producer
+score = citation_in - citation_out
+negative = consumer (cites more than cited)
+positive = producer (cited more than cites)
+============================================================
+
+LHC
+  Top consumer -> producer transitions:
+    Institut national de recherche en informatique et en automatique (FR): -183 -> 336
+    Chinese Academy of Sciences (CN): -408 -> 76
+    Chinese University of Hong Kong (CN): -298 -> 77
+    Xidian University (CN): -245 -> 113
+    University of Hong Kong (HK): -304 -> 41
+  Top producer -> consumer transitions:
+    University of Chicago (US): 43 -> -82
+    Siemens (Germany) (DE): 10 -> -70
+    City College of New York (US): 38 -> -34
+
+Gravitational Waves
+  Top consumer -> producer transitions:
+    University of Maryland, College Park (US): -65 -> 699
+    The University of Tokyo (JP): -233 -> 467
+    Center for Astrophysics Harvard & Smithsonian (US): -189 -> 441
+    West Virginia University (US): -464 -> 145
+    Cardiff University (GB): -98 -> 508
+  Top producer -> consumer transitions:
+    Max Planck Institute for Gravitational Physics (DE): 59 -> -1817
+    University of Birmingham (GB): 3 -> -985
+    University of Illinois Urbana-Champaign (US): 267 -> -542
+
+Complex Network Analysis
+  Top consumer -> producer transitions:
+    University of Electronic Science and Technology of China (CN): -69 -> 406
+    Tsinghua University (CN): -111 -> 310
+    Massachusetts Institute of Technology (US): -142 -> 215
+    Centre National de la Recherche Scientifique (FR): -121 -> 232
+    Carnegie Mellon University (US): -44 -> 288
+  Top producer -> consumer transitions:
+    Universidade do Porto (PT): 377 -> -73
+    Sapienza University of Rome (IT): 22 -> -146
+    University of Manchester (GB): 12 -> -114
+
+Magnetic Thin Films
+  Top consumer -> producer transitions:
+    Centre National de la Recherche Scientifique (FR): -666 -> 2885
+    The University of Tokyo (JP): -196 -> 872
+    Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): -111 -> 921
+    CEA Grenoble (FR): -93 -> 856
+    National University of Singapore (SG): -153 -> 644
+  Top producer -> consumer transitions:
+    Tohoku University (JP): 248 -> -96
+    Sorbonne Université (FR): 36 -> -229
+    Peking University (CN): 6 -> -240
+
+============================================================
+Q3 — Strongest reciprocal citation bonds
+============================================================
+
+LHC
+  Strongest single bond: Xi’an University of Posts and Telecommunications (CN) <-> State Key Laboratory of Cryptology (CN) (year 2018, weight 40)
+  Most persistent pairs:
+    Centre National de la Recherche Scientifique (FR) <-> Institut national de recherche en informatique et en automatique (FR): 8 years, avg weight 22.9, max weight 35
+    University of Electronic Science and Technology of China (CN) <-> Xidian University (CN): 7 years, avg weight 20.7, max weight 30
+    Aarhus University (DK) <-> Bar-Ilan University (IL): 4 years, avg weight 16.8, max weight 25
+    State Key Laboratory of Cryptology (CN) <-> Xidian University (CN): 4 years, avg weight 27.2, max weight 38
+    Massachusetts Institute of Technology (US) <-> Weizmann Institute of Science (IL): 3 years, avg weight 18.3, max weight 29
+
+Gravitational Waves
+  Strongest single bond: California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE) (year 2021, weight 285)
+  Most persistent pairs:
+    California Institute of Technology (US) <-> Max Planck Institute for Gravitational Physics (DE): 21 years, avg weight 125.0, max weight 285
+    Max Planck Institute for Gravitational Physics (DE) <-> Max Planck Society (DE): 10 years, avg weight 73.3, max weight 103
+    Leibniz University Hannover (DE) <-> Max Planck Institute for Gravitational Physics (DE): 8 years, avg weight 85.4, max weight 130
+    California Institute of Technology (US) <-> Max Planck Society (DE): 8 years, avg weight 53.0, max weight 75
+    Australia Telescope National Facility (AU) <-> Commonwealth Scientific and Industrial Research Organisation (AU): 7 years, avg weight 65.9, max weight 94
+
+Complex Network Analysis
+  Strongest single bond: Southwest University (CN) <-> University of Electronic Science and Technology of China (CN) (year 2018, weight 89)
+  Most persistent pairs:
+    Bar-Ilan University (IL) <-> Boston University (US): 5 years, avg weight 17.2, max weight 23
+    University of Electronic Science and Technology of China (CN) <-> University of Fribourg (CH): 5 years, avg weight 15.4, max weight 19
+    University of Electronic Science and Technology of China (CN) <-> University of Shanghai for Science and Technology (CN): 4 years, avg weight 12.8, max weight 17
+    Carnegie Mellon University (US) <-> Stanford University (US): 4 years, avg weight 16.2, max weight 21
+    China University of Geosciences (Beijing) (CN) <-> Ministry of Natural Resources (CN): 4 years, avg weight 15.2, max weight 21
+
+Magnetic Thin Films
+  Strongest single bond: Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR) (year 2012, weight 200)
+  Most persistent pairs:
+    Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 19 years, avg weight 90.8, max weight 152
+    CEA Grenoble (FR) <-> Centre National de la Recherche Scientifique (FR): 17 years, avg weight 70.1, max weight 127
+    Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 15 years, avg weight 121.7, max weight 200
+    Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 10 years, avg weight 63.9, max weight 101
+    CEA Grenoble (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 9 years, avg weight 58.7, max weight 108
+
+Saved: ./data/results/q2_q3_analysis.txt

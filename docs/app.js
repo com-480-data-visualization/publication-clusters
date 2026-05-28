@@ -6,8 +6,6 @@ Cesium.Ion.defaultAccessToken =
 // --------------------------------------------------
 
 const viewer = new Cesium.Viewer("cesiumContainer", {
-    terrain: Cesium.Terrain.fromWorldTerrain(),
-
     requestRenderMode: true,
     maximumRenderTimeChange: Infinity,
 
@@ -43,11 +41,20 @@ const INITIAL_CAMERA_VIEW = {
 // A slightly more cinematic starting view before data loads
 viewer.camera.setView(INITIAL_CAMERA_VIEW);
 
-const pointDataSource = new Cesium.CustomDataSource("superpoints");
-const edgeDataSource = new Cesium.CustomDataSource("superedges");
+const edgePrimitives = viewer.scene.primitives.add(new Cesium.PolylineCollection());
+const pointPrimitives = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+const labelPrimitives = viewer.scene.primitives.add(new Cesium.LabelCollection());
 
-viewer.dataSources.add(edgeDataSource);
-viewer.dataSources.add(pointDataSource);
+const superpointPrimitiveById = new Map();
+
+const LABEL_FILL_COLOR = Cesium.Color.fromCssColorString("#020617");
+const LABEL_OUTLINE_COLOR = Cesium.Color.fromCssColorString("#ffffff");
+const LABEL_BG_COLOR = Cesium.Color.fromCssColorString("#f8fafc").withAlpha(0.86);
+
+const NODE_HEIGHT = 160_000;
+
+// One reusable geodesic instance for arc sampling (avoids allocating per edge)
+const EDGE_GEODESIC = new Cesium.EllipsoidGeodesic();
 
 // --------------------------------------------------
 // State
@@ -96,6 +103,7 @@ const topConsumersList = document.getElementById("topConsumersList");
 
 let currentSuperpointsById = new Map();
 let selectedInstitutionId = null;
+let highlightedSuperpointId = null;
 
 const infoPanel = document.getElementById("infoPanel");
 const infoPanelClose = document.getElementById("infoPanelClose");
@@ -105,6 +113,8 @@ const infoPanelSubtitle = document.getElementById("infoPanelSubtitle");
 const infoPanelStats = document.getElementById("infoPanelStats");
 const infoPanelMembersWrap = document.getElementById("infoPanelMembersWrap");
 const infoPanelMembers = document.getElementById("infoPanelMembers");
+
+const HIGHLIGHT_COLOR = Cesium.Color.fromCssColorString("#38bdf8");
 
 //
 // Manifest Helpers
@@ -178,7 +188,7 @@ function loadCSV(path) {
         Papa.parse(path, {
             download: true,
             header: true,
-            dynamicTyping: true,
+            dynamicTyping: false,
             skipEmptyLines: true,
             complete(results) {
                 resolve(results.data);
@@ -679,6 +689,23 @@ function aggregateEdges(rawEdges, nodeToSuperpoint, directed = DIRECTED_EDGES) {
 // Styling
 // --------------------------------------------------
 
+// Edge styling / decluttering knobs
+const MIN_EDGE_WEIGHT = 3;     // Hide edges weaker than this (set 0 to disable)
+const MAX_EDGES_DRAWN  = 400;  // Only draw the N strongest (set Infinity to disable)
+
+const EDGE_WIDTH_MIN = 1.0;    // Thinnest line (px)
+const EDGE_WIDTH_MAX = 50.0;   // Thickest line (px)
+
+const EDGE_ALPHA_MIN = 0.1;   // Faint small flows
+const EDGE_ALPHA_MAX = 1;   // Solid big flows
+
+// Magnitude color ramp (small -> large)
+const EDGE_RAMP = [
+    { t: 0.0, color: Cesium.Color.fromCssColorString("#1e3a8a") },
+    { t: 0.5, color: Cesium.Color.fromCssColorString("#38bdf8") },
+    { t: 1.0, color: Cesium.Color.fromCssColorString("#e0f2fe") },
+];
+
 function getSuperpointPixelSize(superpoint) {
     const volume = superpoint.totalWeight ?? 0;
     const clusterBoost = Math.sqrt(superpoint.count ?? 1) * 2;
@@ -686,9 +713,9 @@ function getSuperpointPixelSize(superpoint) {
     return Math.min(60, 8 + Math.sqrt(volume) * 1.25 + clusterBoost);
 }
 
-function getEdgeWidth(weight) {
-    if (weight <= 1) return 2.2;
-    return Math.min(16, 2.2 + Math.sqrt(weight) * 1.55);
+// Linear in t (t is already log-normalized to the frame's range)
+function getEdgeWidth(t) {
+    return EDGE_WIDTH_MIN + t * (EDGE_WIDTH_MAX - EDGE_WIDTH_MIN);
 }
 
 function getLabelFont(count) {
@@ -698,140 +725,204 @@ function getLabelFont(count) {
     return "800 19px Inter, sans-serif";
 }
 
+const NODE_COLOR_CLUSTER = Cesium.Color.fromCssColorString("#fbbf24");
+const NODE_COLOR_SINGLE = Cesium.Color.fromCssColorString("#fb7185");
+const NODE_OUTLINE_COLOR = Cesium.Color.fromCssColorString("#f8fafc");
+
 function getNodeColor(count) {
-    return count > 1
-        ? Cesium.Color.fromCssColorString("#fbbf24")
-        : Cesium.Color.fromCssColorString("#fb7185");
+    return count > 1 ? NODE_COLOR_CLUSTER : NODE_COLOR_SINGLE;
 }
 
 function getNodeOutlineColor() {
-    return Cesium.Color.fromCssColorString("#f8fafc");
+    return NODE_OUTLINE_COLOR;
 }
 
-function getEdgeColor(weight) {
-    const alpha = Math.min(0.82, 0.38 + Math.sqrt(weight) * 0.06);
-    return Cesium.Color.fromCssColorString("#38bdf8").withAlpha(alpha);
+// Map a weight onto 0..1 within the frame's range, log-scaled
+// so 10 vs 1000 spread out instead of both saturating.
+function normalizeWeight(weight, minW, maxW) {
+    if (!(maxW > minW)) return 1;
+    const lo = Math.log(minW + 1);
+    const hi = Math.log(maxW + 1);
+    const t = (Math.log((weight ?? 0) + 1) - lo) / (hi - lo);
+    return Math.min(1, Math.max(0, t));
+}
+
+// Interpolate the EDGE_RAMP at position t
+function sampleEdgeRamp(t) {
+    const stops = EDGE_RAMP;
+    for (let i = 1; i < stops.length; i++) {
+        if (t <= stops[i].t) {
+            const a = stops[i - 1];
+            const b = stops[i];
+            const localT = (t - a.t) / ((b.t - a.t) || 1);
+            return Cesium.Color.lerp(a.color, b.color, localT, new Cesium.Color());
+        }
+    }
+    return stops[stops.length - 1].color.clone();
+}
+
+// Color from ramp, alpha rising with magnitude
+function getEdgeColor(t) {
+    const base = sampleEdgeRamp(t);
+    const alpha = EDGE_ALPHA_MIN + t * (EDGE_ALPHA_MAX - EDGE_ALPHA_MIN);
+    return base.withAlpha(alpha);
+}
+
+function getSuperpointMeterRadius(superpoint) {
+    const base = getCameraHeight() * 0.008;
+    const volume = superpoint.totalWeight ?? 0;
+    const clusterBoost = Math.sqrt(superpoint.count ?? 1);
+    const dataFactor = 0.6 + Math.min(1.6, Math.sqrt(volume) * 0.03 + clusterBoost * 0.12);
+    return Math.min(base * dataFactor, 400_000);      // hard cap so it never gets absurd zoomed out
 }
 
 // --------------------------------------------------
 // Rendering
 // --------------------------------------------------
 
-function renderSuperpoints(superpoints) {
-    pointDataSource.entities.removeAll();
+function backOffAlongGeodesic(fromSp, toSp, backoffMeters, height) {
+    const fromCarto = Cesium.Cartographic.fromDegrees(fromSp.lon, fromSp.lat);
+    const toCarto = Cesium.Cartographic.fromDegrees(toSp.lon, toSp.lat);
+    const geodesic = new Cesium.EllipsoidGeodesic(fromCarto, toCarto);
+    const total = geodesic.surfaceDistance;
 
-    for (const superpoint of superpoints) {
-        const isCluster = superpoint.count > 1;
-        const pixelSize = getSuperpointPixelSize(superpoint);
+    // degenerate (same superpoint / self-loop) → just use the center
+    if (!Number.isFinite(total) || total < 1) {
+        return makePosition(fromSp.lon, fromSp.lat, height);
+    }
 
-        pointDataSource.entities.add({
-            id: superpoint.id,
-            position: makePosition(superpoint.lon, superpoint.lat),
+    // never pass ~midpoint, so the two ends can't cross when nodes are close
+    const d = Math.min(backoffMeters, total * 0.45);
+    const p = geodesic.interpolateUsingSurfaceDistance(d);
+    return Cesium.Cartesian3.fromRadians(p.longitude, p.latitude, height);
+}
 
-            point: {
-                pixelSize,
-                color: getNodeColor(superpoint.count),
-                outlineColor: getNodeOutlineColor(),
-                outlineWidth: isCluster ? 2.4 : 1.8,
+function setHighlight(newId) {
+    // revert the previously highlighted node to its base color
+    if (highlightedSuperpointId && highlightedSuperpointId !== newId) {
+        const prevPoint = superpointPrimitiveById.get(highlightedSuperpointId);
+        const prevSp = currentSuperpointsById.get(highlightedSuperpointId);
+        if (prevPoint && prevSp) {
+            prevPoint.color = getNodeColor(prevSp.count);
+        }
+    }
 
-                // Important: let the globe hide points on the far side.
-                disableDepthTestDistance: 0,
+    highlightedSuperpointId = newId;
 
-                // Optional: make front-side nodes fully solid.
-                translucencyByDistance: new Cesium.NearFarScalar(
-                    500_000,
-                    1.0,
-                    25_000_000,
-                    1.0
-                ),
-
-                scaleByDistance: new Cesium.NearFarScalar(
-                    500_000,
-                    1.0,
-                    25_000_000,
-                    0.82
-                ),
-            },
-
-            label: isCluster
-                ? {
-                    text: String(superpoint.count),
-                    font: getLabelFont(superpoint.count),
-                    fillColor: Cesium.Color.fromCssColorString("#020617"),
-                    outlineColor: Cesium.Color.fromCssColorString("#ffffff"),
-                    outlineWidth: 2,
-                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                    pixelOffset: new Cesium.Cartesian2(0, -(pixelSize * 0.72)),
-
-                    showBackground: true,
-                    backgroundColor: Cesium.Color.fromCssColorString("#f8fafc").withAlpha(0.86),
-                    backgroundPadding: new Cesium.Cartesian2(7, 4),
-
-                    disableDepthTestDistance: 0,
-                    scale: 1.0,
-                }
-                : undefined,
-
-            description: `
-                <strong>${superpoint.count} institution${superpoint.count === 1 ? "" : "s"}</strong><br/>
-                Total citation volume: ${formatNumber(superpoint.totalWeight)}<br/>
-                Outgoing citations: ${formatNumber(superpoint.outgoingWeight)}<br/>
-                Incoming citations: ${formatNumber(superpoint.incomingWeight)}
-            `,
-
-            properties: {
-                type: "superpoint",
-                count: superpoint.count,
-                totalWeight: superpoint.totalWeight,
-                incomingWeight: superpoint.incomingWeight,
-                outgoingWeight: superpoint.outgoingWeight,
-                members: superpoint.members,
-            },
-        });
+    // color the new one
+    if (newId) {
+        const point = superpointPrimitiveById.get(newId);
+        const sp = currentSuperpointsById.get(newId);
+        if (point && sp) {
+            point.color = getHighlightColor(sp.count);
+        }
     }
 }
 
+function getHighlightColor(count) {
+    return getNodeColor(count).brighten(0.55, new Cesium.Color());
+}
+
+function renderSuperpoints(superpoints) {
+    for (const superpoint of superpoints) {
+        const isCluster = superpoint.count > 1;
+        const isHighlighted = superpoint.id === highlightedSuperpointId;
+        const displayColor = isHighlighted
+            ? getHighlightColor(superpoint.count)
+            : getNodeColor(superpoint.count);
+
+        const pixelSize = getSuperpointPixelSize(superpoint);
+        const position = makePosition(superpoint.lon, superpoint.lat, NODE_HEIGHT);
+
+        const point = pointPrimitives.add({
+            id: { type: "superpoint", id: superpoint.id },
+            position,
+            pixelSize,
+            color: displayColor,
+            outlineColor: getNodeOutlineColor(),
+            outlineWidth: isCluster ? 2.4 : 1.8,
+            disableDepthTestDistance: 0,
+        });
+        superpointPrimitiveById.set(superpoint.id, point);
+
+        if (isCluster) {
+            labelPrimitives.add({
+                id: { type: "superpoint", id: superpoint.id },
+                position,
+                text: String(superpoint.count),
+                font: getLabelFont(superpoint.count),
+                fillColor: LABEL_FILL_COLOR,
+                outlineColor: LABEL_OUTLINE_COLOR,
+                outlineWidth: 2,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                pixelOffset: new Cesium.Cartesian2(0, -(pixelSize * 0.72)),
+
+                showBackground: true,
+                backgroundColor: LABEL_BG_COLOR,
+                backgroundPadding: new Cesium.Cartesian2(7, 4),
+
+                disableDepthTestDistance: 0,
+            });
+        }
+    }
+}
+
+function geodesicArcPositions(fromSp, toSp, height, segments = 48) {
+    const startCarto = Cesium.Cartographic.fromDegrees(fromSp.lon, fromSp.lat);
+    const endCarto = Cesium.Cartographic.fromDegrees(toSp.lon, toSp.lat);
+    EDGE_GEODESIC.setEndPoints(startCarto, endCarto);
+    const total = EDGE_GEODESIC.surfaceDistance;
+    if (!Number.isFinite(total) || total < 1) {
+        return [makePosition(fromSp.lon, fromSp.lat, height)];
+    }
+    const positions = [];
+    for (let s = 0; s <= segments; s++) {
+        const p = EDGE_GEODESIC.interpolateUsingSurfaceDistance((total * s) / segments);
+        positions.push(Cesium.Cartesian3.fromRadians(p.longitude, p.latitude, height));
+    }
+    return positions;
+}
+
 function renderSuperEdges(superpoints, superEdges) {
-    edgeDataSource.entities.removeAll();
+    const superpointById = new Map(
+        superpoints.map((superpoint) => [superpoint.id, superpoint])
+    );
 
-    const superpointById = new Map(superpoints.map((superpoint) => [superpoint.id, superpoint]));
+    let edges = superEdges.filter((e) => (e.weight ?? 0) >= MIN_EDGE_WEIGHT);
+    edges.sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0));
+    if (edges.length > MAX_EDGES_DRAWN) {
+        edges = edges.slice(0, MAX_EDGES_DRAWN);
+    }
+    if (!edges.length) return;
 
-    for (const edge of superEdges) {
+    let minW = Infinity;
+    let maxW = -Infinity;
+    for (const e of edges) {
+        const w = e.weight ?? 0;
+        if (w < minW) minW = w;
+        if (w > maxW) maxW = w;
+    }
+
+    for (let i = edges.length - 1; i >= 0; i--) {
+        const edge = edges[i];
         const source = superpointById.get(edge.sourceSuper);
         const target = superpointById.get(edge.targetSuper);
-
         if (!source || !target) continue;
 
-        edgeDataSource.entities.add({
-            polyline: {
-                positions: [
-                    makePosition(source.lon, source.lat, 20_000),
-                    makePosition(target.lon, target.lat, 20_000),
-                ],
-                width: getEdgeWidth(edge.weight),
-                material: new Cesium.PolylineArrowMaterialProperty(
-                    getEdgeColor(edge.weight)
-                ),
-                clampToGround: false,
-                arcType: Cesium.ArcType.GEODESIC,
-            },
+        const t = normalizeWeight(edge.weight ?? 0, minW, maxW);
+        const rSource = getSuperpointMeterRadius(source);
+        const rTarget = getSuperpointMeterRadius(target);
 
-            description: `
-                <strong>Directed citation flow</strong><br/>
-                Citation volume: ${formatNumber(edge.weight)}<br/>
-                Institution-pair links: ${formatNumber(edge.edgeCount)}
-            `,
-
-            properties: {
-                type: "superedge",
-                weight: edge.weight,
-                edgeCount: edge.edgeCount,
-                sourceSuper: edge.sourceSuper,
-                targetSuper: edge.targetSuper,
-            },
+        edgePrimitives.add({
+            id: { type: "superedge", weight: edge.weight, edgeCount: edge.edgeCount },
+            positions: geodesicArcPositions(source, target, 20_000),
+            width: getEdgeWidth(t),
+            material: Cesium.Material.fromType("PolylineArrow", {
+                color: getEdgeColor(t),
+            }),
         });
     }
 }
@@ -859,8 +950,10 @@ function refreshGraph(year, options = {}) {
 
     const graph = graphCache[currentDataset].get(year);
 
-    pointDataSource.entities.removeAll();
-    edgeDataSource.entities.removeAll();
+    pointPrimitives.removeAll();
+    labelPrimitives.removeAll();
+    edgePrimitives.removeAll();
+    superpointPrimitiveById.clear();
 
     if (!graph || !graph.nodes.length) {
         yearValue.textContent = year;
@@ -996,8 +1089,10 @@ datasetSelect.addEventListener("change", async function () {
     lastRefreshKey = null;
     hasInitialZoomed = false;
 
-    pointDataSource.entities.removeAll();
-    edgeDataSource.entities.removeAll();
+    pointPrimitives.removeAll();
+    labelPrimitives.removeAll();
+    edgePrimitives.removeAll();
+    superpointPrimitiveById.clear();
     updateStats(null, [], []);
     yearValue.textContent = "—";
 
@@ -1179,6 +1274,8 @@ function showInfoForSuperpoint(superpoint, options = {}) {
 function hideInfoPanel() {
     infoPanel.hidden = true;
     selectedInstitutionId = null;
+    setHighlight(null);
+    viewer.scene.requestRender();
 }
 
 infoPanelClose.addEventListener("click", hideInfoPanel);
@@ -1187,16 +1284,17 @@ const clickHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
 clickHandler.setInputAction((click) => {
     const picked = viewer.scene.pick(click.position);
+    const pickedId = picked?.id;
 
-    if (Cesium.defined(picked) && picked.id && picked.id.properties) {
-        const type = picked.id.properties.type?.getValue?.();
+    const type = pickedId?.properties?.type?.getValue?.() ?? pickedId?.type;
 
-        if (type === "superpoint") {
-            const superpoint = currentSuperpointsById.get(picked.id.id);
-            if (superpoint) showInfoForSuperpoint(superpoint);
-            return;
+    if (type === "superpoint") {
+        const superpoint = currentSuperpointsById.get(pickedId.id);
+        if (superpoint) {
+            setHighlight(superpoint.id);
+            showInfoForSuperpoint(superpoint);
+            viewer.scene.requestRender();
         }
-
         return;
     }
 
