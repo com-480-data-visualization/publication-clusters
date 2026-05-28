@@ -91,7 +91,12 @@ const datasetSelect = document.getElementById("datasetSelect");
 const resetCameraButton = document.getElementById("resetCameraButton");
 
 const introOverlay = document.getElementById("introOverlay");
+const introMain = document.getElementById("introMain");
+const findingsPanel = document.getElementById("findingsPanel");
 const startGlobeButton = document.getElementById("startGlobeButton");
+const showFindingsButton = document.getElementById("showFindingsButton");
+const findingsStartButton = document.getElementById("findingsStartButton");
+const backToIntroButton = document.getElementById("backToIntroButton");
 
 const nodeCountEl = document.getElementById("nodeCount");
 const edgeCountEl = document.getElementById("edgeCount");
@@ -691,7 +696,7 @@ function aggregateEdges(rawEdges, nodeToSuperpoint, directed = DIRECTED_EDGES) {
 
 // Edge styling / decluttering knobs
 const MIN_EDGE_WEIGHT = 3;     // Hide edges weaker than this (set 0 to disable)
-const MAX_EDGES_DRAWN  = 400;  // Only draw the N strongest (set Infinity to disable)
+const MAX_EDGES_DRAWN = 400;  // Only draw the N strongest (set Infinity to disable)
 
 const EDGE_WIDTH_MIN = 1.0;    // Thinnest line (px)
 const EDGE_WIDTH_MAX = 50.0;   // Thickest line (px)
@@ -1125,35 +1130,107 @@ datasetSelect.addEventListener("change", async function () {
 
 resetCameraButton.addEventListener("click", resetCamera);
 
-if (introOverlay && startGlobeButton) {
-    startGlobeButton.addEventListener("click", async () => {
-        if (appStarted) return;
+function stripFindingQuestionPrefixes() {
+    if (!findingsPanel) return;
 
-        appStarted = true;
-        startGlobeButton.disabled = true;
-        startGlobeButton.textContent = "Loading globe…";
+    const questionPrefixPattern = /^\s*Q[1-3]\s*[—–-]\s*/;
+    const walker = document.createTreeWalker(
+        findingsPanel,
+        NodeFilter.SHOW_TEXT,
+        {
+            acceptNode(node) {
+                const parent = node.parentElement;
+                const ignoredTags = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT"]);
 
-        // Hide the overlay first so the click feels immediate.
-        introOverlay.classList.add("is-hidden");
-        viewer.scene.requestRender();
+                if (!parent || ignoredTags.has(parent.tagName)) {
+                    return NodeFilter.FILTER_REJECT;
+                }
 
-        // Give the browser one frame to paint the fade-out before loading CSVs.
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-
-        try {
-            await initUI();
-            setStatus("Ready.");
-        } catch (error) {
-            console.error(error);
-            setStatus("Failed to start visualization.", true);
-
-            // Bring the overlay back if loading fails.
-            introOverlay.classList.remove("is-hidden");
-            startGlobeButton.disabled = false;
-            startGlobeButton.textContent = "Try again";
-            appStarted = false;
+                return questionPrefixPattern.test(node.nodeValue)
+                    ? NodeFilter.FILTER_ACCEPT
+                    : NodeFilter.FILTER_SKIP;
+            },
         }
-    });
+    );
+
+    const textNodes = [];
+    let node = walker.nextNode();
+
+    while (node) {
+        textNodes.push(node);
+        node = walker.nextNode();
+    }
+
+    for (const textNode of textNodes) {
+        textNode.nodeValue = textNode.nodeValue.replace(questionPrefixPattern, "");
+    }
+}
+
+function showIntroSection(sectionName) {
+    if (!introMain || !findingsPanel) return;
+
+    const showingFindings = sectionName === "findings";
+    introMain.hidden = showingFindings;
+    findingsPanel.hidden = !showingFindings;
+
+    if (showingFindings) {
+        stripFindingQuestionPrefixes();
+    }
+}
+
+stripFindingQuestionPrefixes();
+
+async function startVisualization(triggerButton = startGlobeButton) {
+    if (appStarted) return;
+
+    appStarted = true;
+
+    for (const button of [startGlobeButton, findingsStartButton]) {
+        if (button) button.disabled = true;
+    }
+
+    if (triggerButton) {
+        triggerButton.textContent = "Loading globe…";
+    }
+
+    // Hide the overlay first so the click feels immediate.
+    introOverlay.classList.add("is-hidden");
+    viewer.scene.requestRender();
+
+    // Give the browser one frame to paint the fade-out before loading CSVs.
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    try {
+        await initUI();
+        setStatus("Ready.");
+    } catch (error) {
+        console.error(error);
+        setStatus("Failed to start visualization.", true);
+
+        // Bring the overlay back if loading fails.
+        introOverlay.classList.remove("is-hidden");
+        showIntroSection("intro");
+
+        if (startGlobeButton) {
+            startGlobeButton.disabled = false;
+            startGlobeButton.innerHTML = 'Try again <span aria-hidden="true">→</span>';
+        }
+
+        if (findingsStartButton) {
+            findingsStartButton.disabled = false;
+            findingsStartButton.innerHTML = 'Explore these patterns on the globe <span aria-hidden="true">→</span>';
+        }
+
+        appStarted = false;
+    }
+}
+
+if (introOverlay && startGlobeButton) {
+    startGlobeButton.addEventListener("click", () => startVisualization(startGlobeButton));
+
+    showFindingsButton?.addEventListener("click", () => showIntroSection("findings"));
+    backToIntroButton?.addEventListener("click", () => showIntroSection("intro"));
+    findingsStartButton?.addEventListener("click", () => startVisualization(findingsStartButton));
 } else {
     console.warn("Intro overlay or start button was not found.");
 }

@@ -159,6 +159,43 @@
         line-height: 1.55;
       }
 
+      .intro-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .intro-section[hidden] {
+        display: none;
+      }
+
+      .findings-list {
+        display: grid;
+        gap: 14px;
+        margin: 24px 0 28px;
+      }
+
+      .finding-card {
+        padding: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.38);
+      }
+
+      .finding-card h2 {
+        margin: 0 0 8px;
+        color: #e0f2fe;
+        font-size: 16px;
+        line-height: 1.25;
+      }
+
+      .finding-card p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
       .intro-button {
         display: inline-flex;
         align-items: center;
@@ -197,6 +234,17 @@
         box-shadow:
           0 0 0 4px rgba(56, 189, 248, 0.26),
           0 24px 60px rgba(56, 189, 248, 0.38);
+      }
+
+      .intro-button.secondary {
+        color: var(--text-main);
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: none;
+      }
+
+      .intro-button.secondary:hover {
+        box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22);
       }
 
       #toolbar {
@@ -534,6 +582,10 @@
           grid-template-columns: 1fr 1fr;
         }
 
+        .intro-actions {
+          display: grid;
+        }
+
         .intro-button {
           width: 100%;
         }
@@ -706,45 +758,107 @@
         Citation flow map
       </div>
 
-      <h1 class="intro-title">Mapping the geography of scientific influence</h1>
+      <div id="introMain" class="intro-section">
+        <h1 class="intro-title">Mapping the geography of scientific influence</h1>
 
-      <p class="intro-lead">
-        This interactive globe visualizes how research citations move between
-        institutions across the world, showing how scientific fields evolve,
-        cluster, and connect over time.
-      </p>
+        <p class="intro-lead">
+          This interactive globe visualizes how research citations move between
+          institutions across the world, showing how scientific fields evolve,
+          cluster, and connect over time.
+        </p>
 
-      <div class="intro-facts" aria-label="Project facts">
-        <div class="intro-fact">
-          <strong>5</strong>
-          <span>research topics</span>
+        <div class="intro-facts" aria-label="Project facts">
+          <div class="intro-fact">
+            <strong>5</strong>
+            <span>research topics</span>
+          </div>
+
+          <div class="intro-fact">
+            <strong>2005–2025</strong>
+            <span>publication years</span>
+          </div>
+
+          <div class="intro-fact">
+            <strong>25k+</strong>
+            <span>institutions</span>
+          </div>
+
+          <div class="intro-fact">
+            <strong>3M+</strong>
+            <span>citation links</span>
+          </div>
         </div>
 
-        <div class="intro-fact">
-          <strong>2005–2025</strong>
-          <span>publication years</span>
-        </div>
+        <p class="intro-copy">
+          Choose a research topic, move through time, and explore which
+          institutions act as major producers and consumers of citations.
+        </p>
 
-        <div class="intro-fact">
-          <strong>25k+</strong>
-          <span>institutions</span>
-        </div>
+        <div class="intro-actions">
+          <button id="startGlobeButton" class="intro-button" type="button">
+            Start exploring the globe
+            <span aria-hidden="true">→</span>
+          </button>
 
-        <div class="intro-fact">
-          <strong>3M+</strong>
-          <span>citation links</span>
+          <button id="showFindingsButton" class="intro-button secondary" type="button">
+            Findings
+          </button>
         </div>
       </div>
 
-      <p class="intro-copy">
-        Choose a research topic, move through time, and explore which
-        institutions act as major producers and consumers of citations.
-      </p>
+      <div id="findingsPanel" class="intro-section" hidden>
+        <h1 class="intro-title">Key findings</h1>
 
-      <button id="startGlobeButton" class="intro-button" type="button">
-        Start exploring the globe
-        <span aria-hidden="true">→</span>
-      </button>
+        <p class="intro-lead">
+          The citation network reveals a scientific landscape that is becoming
+          more international, more Asian-centered, and marked by durable
+          institution-to-institution partnerships.
+        </p>
+
+        <div class="findings-list" aria-label="Research findings">
+          <article class="finding-card">
+            <h2>Q1 — Integration over time</h2>
+            <p>
+              Participating countries grew from around 65 to over 110 between
+              2005 and 2025, while over 80% of citation links crossed national
+              borders throughout the period. The academic network is
+              integrating, not fragmenting.
+            </p>
+          </article>
+
+          <article class="finding-card">
+            <h2>Q2 — Shifting hubs</h2>
+            <p>
+              Chinese institutions shifted from net importers to major exporters
+              across multiple fields. French institutions such as CNRS, INRIA,
+              and CEA consolidated as dominant domestic producers, while several
+              older European and Japanese hubs lost relative ground.
+            </p>
+          </article>
+
+          <article class="finding-card">
+            <h2>Q3 — Strongest reciprocal bonds</h2>
+            <p>
+              Caltech and the Max Planck Institute for Gravitational Physics
+              form the most enduring bond, appearing in all 21 years with a
+              peak weight of 285 in 2021. CNRS–CEA remained strong in Magnetic
+              Thin Films, while Complex Network Analysis shifted toward Chinese
+              domestic clusters by 2018.
+            </p>
+          </article>
+        </div>
+
+        <div class="intro-actions">
+          <button id="findingsStartButton" class="intro-button" type="button">
+            Explore these patterns on the globe
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <button id="backToIntroButton" class="intro-button secondary" type="button">
+            Back
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
