@@ -1,1 +1,5 @@
+python main.py --topic_name "Gravitational Waves"
+python main.py --topic_name "Magnetic Thin Films"
+python main.py --topic_name "Complex Network Analysis"
+python main.py --topic_name "LHC"
 python main.py --topic_name "Solar Cells"

@@ -1,0 +1,105 @@
+Centre National de la Recherche Scientifique (FR) <-> Institut Néel (FR): 58
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 41
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> CEA Grenoble (FR): 34
+CEA Grenoble (FR) <-> Centre National de la Recherche Scientifique (FR): 30
+Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 28
+Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 57
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 49
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 32
+CEA Grenoble (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 29
+Centre National de la Recherche Scientifique (FR) <-> Tohoku University (JP): 26
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 87
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 56
+Centre National de la Recherche Scientifique (FR) <-> Laboratoire de physique des Solides (FR): 51
+Centre National de la Recherche Scientifique (FR) <-> Institut de Physique et Chimie des Matériaux de Strasbourg (FR): 42
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 41
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 99
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 77
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 74
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> CEA Grenoble (FR): 60
+Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 52
+Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 105
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 70
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 57
+CEA Grenoble (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 43
+Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 42
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 81
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 69
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 56
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> CEA Grenoble (FR): 38
+Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 37
+Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 104
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> Centre National de la Recherche Scientifique (FR): 97
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 62
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> CEA Grenoble (FR): 61
+Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 54
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 200
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 68
+Centre National de la Recherche Scientifique (FR) <-> Université Joseph Fourier (FR): 60
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 49
+Centre National de la Recherche Scientifique (FR) <-> Institut Nanosciences et Cryogénie (FR): 45
+Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 181
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 96
+Spintronics Research Network of Japan (JP) <-> Tohoku University (JP): 52
+Tohoku University (JP) <-> Japan Science and Technology Agency (JP): 48
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 47
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 169
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> Centre National de la Recherche Scientifique (FR): 115
+CEA Grenoble (FR) <-> Centre National de la Recherche Scientifique (FR): 75
+Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 66
+CEA Grenoble (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 62
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 153
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> Centre National de la Recherche Scientifique (FR): 97
+CEA Grenoble (FR) <-> Centre National de la Recherche Scientifique (FR): 76
+Japan Science and Technology Agency (JP) <-> Tohoku University (JP): 61
+Spintronique et Technologie des Composants (FR) <-> Centre National de la Recherche Scientifique (FR): 56
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 173
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 97
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 83
+Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 74
+Centre National de la Recherche Scientifique (FR) <-> Université Grenoble Alpes (FR): 72
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 136
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 134
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 110
+CEA Grenoble (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 93
+Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 90
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 152
+CEA Grenoble (FR) <-> Centre National de la Recherche Scientifique (FR): 127
+Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 122
+Institut Nanosciences et Cryogénie (FR) <-> Centre National de la Recherche Scientifique (FR): 110
+CEA Grenoble (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 108
+Université Paris-Sud (FR) <-> Centre National de la Recherche Scientifique (FR): 132
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 105
+Centre National de la Recherche Scientifique (FR) <-> Université Grenoble Alpes (FR): 83
+Université Paris-Saclay (FR) <-> Centre National de la Recherche Scientifique (FR): 76
+Centre National de la Recherche Scientifique (FR) <-> CEA Grenoble (FR): 73
+The University of Tokyo (JP) <-> RIKEN Center for Emergent Matter Science (JP): 111
+Spintronics Research Network of Japan (JP) <-> Tohoku University (JP): 86
+Université Paris-Saclay (FR) <-> Centre National de la Recherche Scientifique (FR): 69
+Université Grenoble Alpes (FR) <-> Centre National de la Recherche Scientifique (FR): 62
+Laboratoire Albert Fert (FR) <-> Centre National de la Recherche Scientifique (FR): 51
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> Centre National de la Recherche Scientifique (FR): 138
+CEA Grenoble (FR) <-> Centre National de la Recherche Scientifique (FR): 124
+Université Grenoble Alpes (FR) <-> Centre National de la Recherche Scientifique (FR): 119
+Spintronique et Technologie des Composants (FR) <-> Centre National de la Recherche Scientifique (FR): 101
+RIKEN Center for Emergent Matter Science (JP) <-> The University of Tokyo (JP): 99
+The University of Tokyo (JP) <-> Hokkaido University (JP): 95
+Université Grenoble Alpes (FR) <-> Centre National de la Recherche Scientifique (FR): 86
+Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR) <-> Centre National de la Recherche Scientifique (FR): 80
+CEA Grenoble (FR) <-> Centre National de la Recherche Scientifique (FR): 75
+Spintronique et Technologie des Composants (FR) <-> Centre National de la Recherche Scientifique (FR): 67
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 112
+Université Paris-Saclay (FR) <-> Centre National de la Recherche Scientifique (FR): 110
+Chinese Academy of Sciences (CN) <-> Institute of Semiconductors (CN): 86
+Centre National de la Recherche Scientifique (FR) <-> Université Grenoble Alpes (FR): 81
+University of Chinese Academy of Sciences (CN) <-> Chinese Academy of Sciences (CN): 79
+Chinese Academy of Sciences (CN) <-> University of Chinese Academy of Sciences (CN): 106
+Chinese Academy of Sciences (CN) <-> Institute of Physics (CN): 100
+Université Paris-Saclay (FR) <-> Centre National de la Recherche Scientifique (FR): 96
+Centre National de la Recherche Scientifique (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 70
+Centre National de la Recherche Scientifique (FR) <-> Université Grenoble Alpes (FR): 69
+Chinese Academy of Sciences (CN) <-> University of Chinese Academy of Sciences (CN): 56
+Chinese Academy of Sciences (CN) <-> Institute of Semiconductors (CN): 56
+The University of Tokyo (JP) <-> RIKEN Center for Emergent Matter Science (JP): 48
+The University of Tokyo (JP) <-> Tohoku University (JP): 43
+Tohoku University (JP) <-> Spintronics Research Network of Japan (JP): 35

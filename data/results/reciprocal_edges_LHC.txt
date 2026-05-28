@@ -1,0 +1,105 @@
+Weizmann Institute of Science (IL) <-> Massachusetts Institute of Technology (US): 29
+University of California, Berkeley (US) <-> Weizmann Institute of Science (IL): 20
+IBM (United States) (US) <-> IBM Research - Zurich (CH): 18
+University of California, San Diego (US) <-> Massachusetts Institute of Technology (US): 17
+Stanford University (US) <-> IBM Research - Zurich (CH): 12
+Aarhus University (DK) <-> Technion – Israel Institute of Technology (IL): 13
+Aarhus University (DK) <-> Massachusetts Institute of Technology (US): 13
+IBM (United States) (US) <-> IBM Research - Zurich (CH): 13
+University of California, San Diego (US) <-> Massachusetts Institute of Technology (US): 12
+IBM (United States) (US) <-> Massachusetts Institute of Technology (US): 12
+Technion – Israel Institute of Technology (IL) <-> Weizmann Institute of Science (IL): 23
+IBM (United States) (US) <-> Weizmann Institute of Science (IL): 18
+University of California, San Diego (US) <-> IBM (United States) (US): 14
+IBM (United States) (US) <-> Aarhus University (DK): 14
+IBM (United States) (US) <-> Stanford University (US): 13
+University of California, San Diego (US) <-> Stanford University (US): 15
+University of California, San Diego (US) <-> IBM (United States) (US): 12
+Technion – Israel Institute of Technology (IL) <-> Weizmann Institute of Science (IL): 12
+Courant Institute of Mathematical Sciences (US) <-> New York University (US): 12
+Institut national de recherche en informatique et en automatique (FR) <-> Centre National de la Recherche Scientifique (FR): 11
+Tel Aviv University (IL) <-> University of California, San Diego (US): 11
+IBM Research - Zurich (CH) <-> IBM (United States) (US): 10
+IBM Research - Zurich (CH) <-> Johns Hopkins University (US): 10
+New York University (US) <-> University of California, San Diego (US): 9
+University of California, San Diego (US) <-> École Normale Supérieure - PSL (FR): 8
+Institut national de recherche en informatique et en automatique (FR) <-> Centre National de la Recherche Scientifique (FR): 25
+New York University (US) <-> Weizmann Institute of Science (IL): 18
+Weizmann Institute of Science (IL) <-> Massachusetts Institute of Technology (US): 13
+Tel Aviv University (IL) <-> Weizmann Institute of Science (IL): 12
+Aarhus University (DK) <-> ETH Zurich (CH): 12
+Centre National de la Recherche Scientifique (FR) <-> Institut national de recherche en informatique et en automatique (FR): 19
+IBM (United States) (US) <-> University of California, San Diego (US): 13
+Weizmann Institute of Science (IL) <-> University of California, San Diego (US): 12
+Weizmann Institute of Science (IL) <-> Tel Aviv University (IL): 11
+The University of Texas at Austin (US) <-> University of California, Los Angeles (US): 10
+Stanford University (US) <-> University of California, San Diego (US): 17
+The University of Texas at Austin (US) <-> NTT (Japan) (JP): 13
+Stanford University (US) <-> Massachusetts Institute of Technology (US): 13
+Aarhus University (DK) <-> Bar-Ilan University (IL): 12
+The University of Texas at Austin (US) <-> Stanford University (US): 11
+University of California, San Diego (US) <-> Stanford University (US): 33
+Technion – Israel Institute of Technology (IL) <-> Tel Aviv University (IL): 22
+Stanford University (US) <-> Tel Aviv University (IL): 17
+Stanford University (US) <-> The University of Texas at Austin (US): 15
+Aarhus University (DK) <-> Bar-Ilan University (IL): 15
+Weizmann Institute of Science (IL) <-> Stanford University (US): 19
+Technion – Israel Institute of Technology (IL) <-> Tel Aviv University (IL): 15
+Technion – Israel Institute of Technology (IL) <-> University of Maryland, College Park (US): 15
+Weizmann Institute of Science (IL) <-> Microsoft (United States) (US): 13
+Weizmann Institute of Science (IL) <-> IBM (United States) (US): 13
+Technion – Israel Institute of Technology (IL) <-> Tel Aviv University (IL): 24
+Technion – Israel Institute of Technology (IL) <-> Aarhus University (DK): 19
+Aarhus University (DK) <-> Bar-Ilan University (IL): 15
+Chinese Academy of Sciences (CN) <-> University of Electronic Science and Technology of China (CN): 14
+Massachusetts Institute of Technology (US) <-> Weizmann Institute of Science (IL): 13
+Centre National de la Recherche Scientifique (FR) <-> Institut national de recherche en informatique et en automatique (FR): 25
+Stanford University (US) <-> Weizmann Institute of Science (IL): 18
+École Normale Supérieure - PSL (FR) <-> University of California, San Diego (US): 14
+University of Electronic Science and Technology of China (CN) <-> Xidian University (CN): 13
+Xidian University (CN) <-> Chinese Academy of Sciences (CN): 12
+Stanford University (US) <-> Weizmann Institute of Science (IL): 36
+Nanjing University of Information Science and Technology (CN) <-> Xidian University (CN): 27
+Chinese Academy of Sciences (CN) <-> Institute of Information Engineering (CN): 22
+Centre National de la Recherche Scientifique (FR) <-> Institut national de recherche en informatique et en automatique (FR): 22
+Chinese Academy of Sciences (CN) <-> Xidian University (CN): 19
+Xi’an University of Posts and Telecommunications (CN) <-> State Key Laboratory of Cryptology (CN): 40
+Centre National de la Recherche Scientifique (FR) <-> Institut national de recherche en informatique et en automatique (FR): 25
+Centre National de la Recherche Scientifique (FR) <-> École Normale Supérieure - PSL (FR): 21
+Wuhan University (CN) <-> Xidian University (CN): 18
+École Normale Supérieure - PSL (FR) <-> Institut national de recherche en informatique et en automatique (FR): 17
+Xidian University (CN) <-> University of Electronic Science and Technology of China (CN): 28
+Xidian University (CN) <-> State Key Laboratory of Cryptology (CN): 23
+Centre National de la Recherche Scientifique (FR) <-> Institut national de recherche en informatique et en automatique (FR): 21
+Reichman University (IL) <-> Herzliya Medical Center (IL): 15
+Xi’an University of Posts and Telecommunications (CN) <-> State Key Laboratory of Cryptology (CN): 15
+Institut national de recherche en informatique et en automatique (FR) <-> Centre National de la Recherche Scientifique (FR): 35
+Centre National de la Recherche Scientifique (FR) <-> École Normale Supérieure - PSL (FR): 32
+Université Paris Sciences et Lettres (FR) <-> Centre National de la Recherche Scientifique (FR): 26
+Bar-Ilan University (IL) <-> Aarhus University (DK): 25
+Xidian University (CN) <-> University of Electronic Science and Technology of China (CN): 25
+Xidian University (CN) <-> University of Electronic Science and Technology of China (CN): 30
+Xi’an University of Posts and Telecommunications (CN) <-> Xidian University (CN): 26
+State Key Laboratory of Cryptology (CN) <-> Xidian University (CN): 24
+Tokyo Institute of Technology (JP) <-> Tohoku University (JP): 17
+Shaanxi Normal University (CN) <-> State Key Laboratory of Cryptology (CN): 16
+Fujian Normal University (CN) <-> State Key Laboratory of Cryptology (CN): 27
+Xidian University (CN) <-> State Key Laboratory of Cryptology (CN): 24
+Xidian University (CN) <-> University of Electronic Science and Technology of China (CN): 19
+Herzliya Medical Center (IL) <-> Aarhus University (DK): 19
+Reichman University (IL) <-> Herzliya Medical Center (IL): 18
+Xidian University (CN) <-> State Key Laboratory of Cryptology (CN): 38
+Guilin University of Electronic Technology (CN) <-> Xidian University (CN): 17
+Xidian University (CN) <-> University of Electronic Science and Technology of China (CN): 17
+Xidian University (CN) <-> Beijing University of Posts and Telecommunications (CN): 16
+KU Leuven (BE) <-> IMEC (BE): 16
+Fujian Normal University (CN) <-> Xidian University (CN): 18
+University of Electronic Science and Technology of China (CN) <-> Xidian University (CN): 13
+Xidian University (CN) <-> Beijing University of Posts and Telecommunications (CN): 13
+Université Paris Cité (FR) <-> Centre National de la Recherche Scientifique (FR): 13
+University of Electronic Science and Technology of China (CN) <-> State Key Laboratory of Cryptology (CN): 12
+Centre National de la Recherche Scientifique (FR) <-> Université Paris Sciences et Lettres (FR): 21
+Centre National de la Recherche Scientifique (FR) <-> Université Paris Cité (FR): 15
+Institut de Biologie de l'École Normale Supérieure (FR) <-> Université Paris Sciences et Lettres (FR): 14
+Centre National de la Recherche Scientifique (FR) <-> Institut de Biologie de l'École Normale Supérieure (FR): 14
+Centre National de la Recherche Scientifique (FR) <-> Institut de Recherche en Informatique Fondamentale (FR): 12
