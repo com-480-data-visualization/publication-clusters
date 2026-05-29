@@ -25,9 +25,9 @@ We cover five research domains, over 25,000 institutions worldwide, and more tha
 
 | Milestone | Document |
 | --------- | -------- |
-| Milestone 1 | [milestone1.md](milestone1.md) |
-| Milestone 2 | [milestone2.pdf](milestone2.pdf) |
-| Milestone 3 - Process Book | [process_book.pdf](process_book.pdf) |
+| Milestone 1 | [milestone1.md](/milestones/milestone1.md) |
+| Milestone 2 | [milestone2.pdf](/milestones/milestone2.pdf) |
+| Milestone 3 - Process Book | [process_book.pdf](/milestones/process_book.pdf) |
 | Milestone 3 - Screencast | [Video](https://youtu.be/N5-NGN9ug94) |
 
 ---
