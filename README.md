@@ -125,12 +125,14 @@ Nodes are coloured by whether they are individual institutions (pink) or cluster
 ---
 
 ## Key Findings
+**Q1: Is the global academic network integrating or fragmenting over time?** 
+The number of countries participating in citation networks grew from around 65 to over 110 between 2005 and 2025. Over 80% of citation links cross national borders throughout the entire period. The global academic network is integrating, not fragmenting.
 
-**Q1 — Integration over time:** The number of countries participating in citation networks grew from around 65 to over 110 between 2005 and 2025. Over 80% of citation links cross national borders throughout the entire period. The global academic network is integrating, not fragmenting.
+**Q2: Which countries transitioned from knowledge consumers to exporters?**
+China's research institutions shifted from net importers to major exporters across multiple fields. French institutions (CNRS, INRIA, CEA) consolidated as dominant domestic producers. Several historically prominent institutions in Europe and Japan lost ground relative to rising Asian hubs.
 
-**Q2 — Shifting hubs:** China's research institutions shifted from net importers to major exporters across multiple fields. French institutions (CNRS, INRIA, CEA) consolidated as dominant domestic producers. Several historically prominent institutions in Europe and Japan lost ground relative to rising Asian hubs.
-
-**Q3 — Strongest reciprocal bonds:** The most enduring bond is between Caltech (US) and the Max Planck Institute for Gravitational Physics (DE), present in all 21 years of data with a peak weight of 285 in 2021 following the LIGO detection. In Magnetic Thin Films, CNRS and CEA have appeared together for 19 consecutive years. In Complex Network Analysis, dominant pairs shifted from US-Israeli academic ties to Chinese domestic clusters by 2018.
+**Q3: Which institution pairs share the strongest reciprocal citation bonds?**
+The most enduring bond is between Caltech (US) and the Max Planck Institute for Gravitational Physics (DE), present in all 21 years of data with a peak weight of 285 in 2021 following the LIGO detection. In Magnetic Thin Films, CNRS and CEA have appeared together for 19 consecutive years. In Complex Network Analysis, dominant pairs shifted from US-Israeli academic ties to Chinese domestic clusters by 2018.
 
 ---
 
