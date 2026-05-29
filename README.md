@@ -138,6 +138,6 @@ Nodes are coloured by whether they are individual institutions (pink) or cluster
 
 Two of our team members are also working on a project for the Computational Social Media course that involves the academic citation world. We want to be fully transparent about the boundary between these two projects.
 
-The two projects share no code and no ideas. The datasets are entirely different. The other project studies social network attributes of the graph in the Global South versus the Global North, it is a comparison of network-level properties (centrality, community structure, connectivity) between geographic groups of the graph. Our project builds institution-level geographic citation networks over time across specific research fields to visualize how knowledge flows between labs across the planet.
+The two projects share no code and no ideas. The datasets are entirely different. The other project studies social network attributes of the graph in the Global South versus the Global North, it is a comparison of network-level properties (centrality, community structure, connectivity) between geographic groups of the graph (in Computer Science). Our project builds institution-level geographic citation networks over time across specific research fields (Physics) to visualize how knowledge flows between labs across the planet.
 
 The only thing the two projects have in common is a general interest in the academic citation world. Everything else, the research questions, the datasets, the methods, the visualizations, and the conclusions, is completely independent.
