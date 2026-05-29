@@ -53,6 +53,18 @@ Magnetic Thin Films
     Sorbonne Université (FR): 36 -> -229
     Peking University (CN): 6 -> -240
 
+Solar Cells
+  Top consumer -> producer transitions:
+    Jiangnan University (CN): -129 -> 1409
+    Wageningen University & Research (NL): -338 -> 951
+    University of Massachusetts Amherst (US): -193 -> 795
+    China Agricultural University (CN): -19 -> 802
+    Centre National de la Recherche Scientifique (FR): -74 -> 446
+  Top producer -> consumer transitions:
+    National Research Centre (EG): 5 -> -120
+    University of Georgia (US): 95 -> -9
+    Purdue University West Lafayette (US): 74 -> -25
+
 ============================================================
 Q3 — Strongest reciprocal citation bonds
 ============================================================
@@ -92,5 +104,14 @@ Magnetic Thin Films
     Centre National de la Recherche Scientifique (FR) <-> Université Paris-Sud (FR): 15 years, avg weight 121.7, max weight 200
     Centre National de la Recherche Scientifique (FR) <-> Spintronique et Technologie des Composants (FR): 10 years, avg weight 63.9, max weight 101
     CEA Grenoble (FR) <-> Commissariat à l'Énergie Atomique et aux Énergies Alternatives (FR): 9 years, avg weight 58.7, max weight 108
+
+Solar Cells
+  Strongest single bond: State Key Laboratory of Food Science and Technology (CN) <-> Jiangnan University (CN) (year 2023, weight 304)
+  Most persistent pairs:
+    Centre National de la Recherche Scientifique (FR) <-> Le Mans Université (FR): 12 years, avg weight 31.2, max weight 49
+    Jiangnan University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 12 years, avg weight 162.2, max weight 304
+    Massey University (NZ) <-> Riddet Institute (NZ): 10 years, avg weight 62.3, max weight 156
+    Nanchang University (CN) <-> State Key Laboratory of Food Science and Technology (CN): 9 years, avg weight 119.0, max weight 151
+    TiFN (NL) <-> Wageningen University & Research (NL): 6 years, avg weight 56.7, max weight 102
 
 Saved: ./data/results/q2_q3_analysis.txt
