@@ -27,7 +27,7 @@ We cover five research domains, over 25,000 institutions worldwide, and more tha
 | --------- | -------- |
 | Milestone 1 | [milestone1.md](milestone1.md) |
 | Milestone 2 | [milestone2.pdf](milestone2.pdf) |
-| Milestone 3 — Process Book | [process_book.pdf](process_book.pdf) |
+| Milestone 3 - Process Book | [process_book.pdf](process_book.pdf) |
 | Milestone 3 - Screencast | [Video](https://youtu.be/N5-NGN9ug94) |
 
 ---
@@ -40,7 +40,7 @@ We cover five research domains, over 25,000 institutions worldwide, and more tha
 pip install -r requirements.txt
 ```
 
-The main dependencies are `requests`, `pandas`, and `geopy` for the data pipeline. The website itself has no Python dependencies — it runs entirely in the browser.
+The main dependencies are `requests`, `pandas`, and `geopy` for the data pipeline. The website itself has no Python dependencies, it runs entirely in the browser.
 
 ### Running the data pipeline
 
